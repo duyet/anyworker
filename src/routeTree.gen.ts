@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as DIndexRouteImport } from './routes/d/index'
+import { Route as DClarityRouteImport } from './routes/d/clarity'
 import { Route as DPaperRouteImport } from './routes/d/paper'
 import { Route as DStudioRouteImport } from './routes/d/studio'
 
@@ -30,6 +31,11 @@ const DIndexRoute = DIndexRouteImport.update({
   path: '/d/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DClarityRoute = DClarityRouteImport.update({
+  id: '/d/clarity',
+  path: '/d/clarity',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DPaperRoute = DPaperRouteImport.update({
   id: '/d/paper',
   path: '/d/paper',
@@ -44,6 +50,7 @@ const DStudioRoute = DStudioRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/d/clarity': typeof DClarityRoute
   '/d/paper': typeof DPaperRoute
   '/d/studio': typeof DStudioRoute
   '/d/': typeof DIndexRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/d/clarity': typeof DClarityRoute
   '/d/paper': typeof DPaperRoute
   '/d/studio': typeof DStudioRoute
   '/d': typeof DIndexRoute
@@ -59,21 +67,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/d/clarity': typeof DClarityRoute
   '/d/paper': typeof DPaperRoute
   '/d/studio': typeof DStudioRoute
   '/d/': typeof DIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/$' | '/d/paper' | '/d/studio' | '/d/'
+  fullPaths: '/' | '/api/$' | '/d/clarity' | '/d/paper' | '/d/studio' | '/d/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/$' | '/d/paper' | '/d/studio' | '/d'
-  id: '__root__' | '/' | '/api/$' | '/d/paper' | '/d/studio' | '/d/'
+  to: '/' | '/api/$' | '/d/clarity' | '/d/paper' | '/d/studio' | '/d'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/$'
+    | '/d/clarity'
+    | '/d/paper'
+    | '/d/studio'
+    | '/d/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  DClarityRoute: typeof DClarityRoute
   DPaperRoute: typeof DPaperRoute
   DStudioRoute: typeof DStudioRoute
   DIndexRoute: typeof DIndexRoute
@@ -102,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/d/clarity': {
+      id: '/d/clarity'
+      path: '/d/clarity'
+      fullPath: '/d/clarity'
+      preLoaderRoute: typeof DClarityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/d/paper': {
       id: '/d/paper'
       path: '/d/paper'
@@ -122,6 +146,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiSplatRoute: ApiSplatRoute,
+  DClarityRoute: DClarityRoute,
   DPaperRoute: DPaperRoute,
   DStudioRoute: DStudioRoute,
   DIndexRoute: DIndexRoute,

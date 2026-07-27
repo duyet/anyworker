@@ -55,15 +55,67 @@ export const hero = {
   ],
 } as const
 
-/** The live task panel in the hero. Illustrative, and labelled as such in the UI. */
-export const heroRun = {
-  prompt: "Pull the Q3 numbers and send the board update.",
-  steps: [
-    { label: "Read", detail: "Q3-forecast.xlsx", state: "done" },
-    { label: "Checked", detail: "3 figures against last month", state: "done" },
-    { label: "Drafted", detail: "board-update.docx", state: "done" },
-    { label: "Waiting", detail: "send to #exec — approve?", state: "waiting" },
-  ],
+/**
+ * The product interface shown in the hero.
+ *
+ * A depiction of the app, not a live feed — it is static and labelled
+ * "Illustrative interface" in the UI so it cannot be mistaken for a real run.
+ * Model names are deliberately generic: naming a specific free model here would
+ * be a claim about availability we would then have to keep true.
+ */
+export const heroStudio = {
+  appName: "AnyWorker Studio",
+  statusLabel: "Running",
+  caption: "Illustrative interface",
+  sidebar: {
+    tasksLabel: "Tasks",
+    tasks: [
+      { name: "Board update — Q3", state: "running" },
+      { name: "Weekly marketing report", state: "scheduled" },
+      { name: "Inbox triage", state: "done" },
+    ],
+    connectionsLabel: "Connections",
+    connections: [
+      { name: "Google Drive", logo: "gdrive" },
+      { name: "Slack", logo: "slack" },
+      { name: "Gmail", logo: "gmail" },
+    ],
+  },
+  task: {
+    title: "Board update — Q3",
+    meta: "Free model · runs unattended",
+    youLabel: "You",
+    prompt: "Pull the Q3 numbers and send the board update.",
+    steps: [
+      {
+        label: "Read",
+        detail: "Q3-forecast.xlsx",
+        tool: "Drive",
+        state: "done",
+      },
+      {
+        label: "Checked",
+        detail: "3 figures against last month",
+        tool: "",
+        state: "done",
+      },
+      {
+        label: "Drafted",
+        detail: "board-update.docx",
+        tool: "Docs",
+        state: "done",
+      },
+      {
+        label: "Waiting",
+        detail: "Send to #exec",
+        tool: "Slack",
+        state: "waiting",
+      },
+    ],
+    approveLabel: "Approve & send",
+    editLabel: "Edit first",
+    checkInNote: "Checks in before anything is sent",
+  },
 } as const
 
 export const capabilities = {
@@ -421,9 +473,9 @@ export const footer = {
     {
       title: "Design variants",
       links: [
-        { label: "Clarity", href: "/" },
+        { label: "Studio", href: "/" },
+        { label: "Clarity", href: "/d/clarity" },
         { label: "Paper", href: "/d/paper" },
-        { label: "Studio", href: "/d/studio" },
         { label: "Compare all", href: "/d" },
       ],
     },
@@ -434,9 +486,17 @@ export const footer = {
 /** The three design directions, used by the /d picker and the route files. */
 export const variants = [
   {
+    id: "studio",
+    name: "Studio",
+    href: "/",
+    summary:
+      "Near-black canvas, lime accent, mono microtype. Instrument-panel energy.",
+    notes: "The chosen direction — this is what ships at anyworker.dev.",
+  },
+  {
     id: "clarity",
     name: "Clarity",
-    href: "/",
+    href: "/d/clarity",
     summary:
       "Light canvas, electric blue, Inter. The familiar high-conversion register.",
     notes:
@@ -450,14 +510,6 @@ export const variants = [
       "Warm cream, clay accent, Fraunces serif display. Editorial and calm.",
     notes:
       "Reads human rather than technical — fits the non-technical audience.",
-  },
-  {
-    id: "studio",
-    name: "Studio",
-    href: "/d/studio",
-    summary:
-      "Near-black canvas, lime accent, mono microtype. Instrument-panel energy.",
-    notes: "Most striking, most opinionated. Skews technical.",
   },
 ] as const
 

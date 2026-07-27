@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 
 import { Landing } from "@/components/landing/landing"
 
-/** The default direction. Promoting another variant to / is a one-word change. */
+/** The chosen direction. Swapping the default is a one-word change here. */
 export const Route = createFileRoute("/")({
-  component: () => <Landing theme="clarity" />,
+  component: () => <Landing theme="studio" />,
 })

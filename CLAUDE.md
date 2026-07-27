@@ -66,11 +66,14 @@ variants in sync: they render identical content through different themes.
 ### Three design variants, one component tree
 
 ```
-/            → theme "clarity"  (light, blue, Inter)          ← the default
+/            → theme "studio"   (near-black, lime, mono labels)  ← the chosen one
+/d/clarity   → theme "clarity"  (light, blue, Inter)
 /d/paper     → theme "paper"    (cream, clay, serif display)
-/d/studio    → theme "studio"   (near-black, lime, mono labels)
 /d           → index page linking all three
 ```
+
+`/d/studio` also exists and renders the same page as `/`, so the comparison
+page keeps three working links.
 
 Every variant renders the **same** `<Landing>` component. The difference is a `data-theme`
 attribute on the page root, which re-points the CSS custom properties defined in
@@ -82,7 +85,7 @@ Consequence: a section built for one variant works in all three for free. If you
 yourself writing `dark:` or `theme === "studio" ? ... : ...` inside a section, the token
 set is missing something — add the token instead.
 
-Picking a winner later = change the theme constant in `src/routes/index.tsx`. Nothing else.
+Changing the default = change the one word in `src/routes/index.tsx`. Nothing else.
 
 ### Layout
 
@@ -107,7 +110,10 @@ src/
 - **Static first.** Every route prerenders. No server-side data fetching on the landing page.
   If a section needs runtime data, it is the wrong section.
 - **No external network at runtime.** Fonts self-hosted, icons bundled, no analytics script
-  from a CDN, no remote images. Brand logos are inline SVG in `src/components/landing/logos.tsx`.
+  from a CDN, no remote images. Brand logos come from `simple-icons` via
+  `src/components/landing/logos.tsx`. Slack, OpenAI, Outlook and Z.AI are **not** in that set,
+  so they render as lettermarks. Do not hand-draw replacements — an approximated mark is worse
+  than an obviously-generic one.
 - **Accessibility is not optional.** Every interactive element reachable by keyboard with a
   visible focus ring. Colour contrast ≥ 4.5:1 for body text in all three themes — check
   `studio` and `paper` specifically, they are the ones that break.

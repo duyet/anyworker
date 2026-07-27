@@ -92,7 +92,8 @@ In page order, one file each in `src/components/landing/`:
 
 ### Phase 4 — Routes `[x]`
 
-- [x] `routes/index.tsx` → `clarity` · `routes/d/paper.tsx` · `routes/d/studio.tsx`
+- [x] `routes/index.tsx` → **`studio`** (the chosen direction) · `routes/d/clarity.tsx` ·
+      `routes/d/paper.tsx` · `routes/d/studio.tsx`
 - [x] `routes/d/index.tsx` — variant picker with screenshots-in-page
 - [x] `__root.tsx` — real title/description/OG, favicon, drop devtools from prod build
 - [x] Prerender all routes to static HTML

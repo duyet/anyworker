@@ -1,10 +1,10 @@
-import { ArrowRight, Check, Loader, Sparkles } from "lucide-react"
+import { ArrowRight, Check, Sparkles } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { HeroStudio } from "@/components/landing/hero-studio"
 import { Container, Headline, Lede } from "@/components/landing/primitives"
-import { hero, heroRun } from "@/content/site"
-import { cn } from "@/lib/utils"
+import { hero } from "@/content/site"
 
 export function Hero() {
   return (
@@ -60,78 +60,8 @@ export function Hero() {
           ))}
         </ul>
 
-        <TaskRun />
+        <HeroStudio />
       </Container>
     </section>
-  )
-}
-
-/**
- * The illustrative task panel.
- *
- * It is deliberately a static, labelled example rather than a fake live feed —
- * animating it would imply a real run is happening. The "waiting" row is the
- * point of the whole component: it shows the product asking before it acts.
- */
-function TaskRun() {
-  return (
-    <div className="mt-14 w-full max-w-2xl text-left">
-      <div className="rounded-card border border-border bg-surface shadow-lift">
-        <div className="flex items-start gap-3 border-b border-border p-5">
-          <Sparkles
-            className="mt-0.5 size-4 shrink-0 text-brand"
-            aria-hidden="true"
-          />
-          <p className="text-[0.95rem] font-medium text-pretty text-foreground">
-            {heroRun.prompt}
-          </p>
-        </div>
-
-        <ol className="divide-y divide-border">
-          {heroRun.steps.map((step) => {
-            const waiting = step.state === "waiting"
-
-            return (
-              <li
-                key={step.label}
-                className="flex items-center gap-3 px-5 py-3.5"
-              >
-                <StepIcon waiting={waiting} />
-                <span
-                  className={cn(
-                    "w-20 shrink-0 text-sm font-medium",
-                    waiting ? "text-brand" : "text-foreground"
-                  )}
-                >
-                  {step.label}
-                </span>
-                <span className="truncate text-sm text-muted-foreground">
-                  {step.detail}
-                </span>
-              </li>
-            )
-          })}
-        </ol>
-      </div>
-    </div>
-  )
-}
-
-function StepIcon({ waiting }: { waiting: boolean }) {
-  if (waiting) {
-    return (
-      <span className="flex size-5 shrink-0 items-center justify-center rounded-pill bg-brand-muted">
-        <Loader
-          className="size-3 text-brand motion-safe:animate-spin"
-          aria-hidden="true"
-        />
-      </span>
-    )
-  }
-
-  return (
-    <span className="flex size-5 shrink-0 items-center justify-center rounded-pill bg-brand text-brand-foreground">
-      <Check className="size-3" aria-hidden="true" />
-    </span>
   )
 }
