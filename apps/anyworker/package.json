@@ -1,0 +1,11 @@
+{
+  "name": "@anyworker/app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AnyWorker desktop product (GUI + local agent server)",
+  "scripts": {
+    "build": "pnpm --filter @anyworker/gui build",
+    "typecheck": "pnpm --filter @anyworker/gui typecheck",
+    "package": "bash ../../scripts/package-app.sh"
+  }
+}

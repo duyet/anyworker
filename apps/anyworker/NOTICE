@@ -1,0 +1,3 @@
+AnyWorker includes design and product patterns inspired by OpenWorker
+(https://github.com/andrewyng/openworker), licensed under the MIT License.
+This is a clean-room reimplementation on the Claude Agent SDK; it is not a fork.
