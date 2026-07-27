@@ -8,6 +8,8 @@ importers:
 
   .: {}
 
+  apps/anyworker: {}
+
   apps/anyworker/gui:
     dependencies:
       clsx:
