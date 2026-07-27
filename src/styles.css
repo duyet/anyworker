@@ -91,7 +91,11 @@
   --popover-foreground: oklch(0.17 0.014 260);
   --muted: oklch(0.976 0.004 250);
   --muted-foreground: oklch(0.51 0.017 258);
-  --subtle-foreground: oklch(0.64 0.014 258);
+  /* Only marginally lighter than muted-foreground, and deliberately so: this is
+     used at 12–14px, where anything lighter drops under the 4.5:1 AA floor on
+     the muted band. Hierarchy below `muted` comes from size and weight, not
+     from a lighter grey. */
+  --subtle-foreground: oklch(0.52 0.016 258);
   --border: oklch(0.922 0.006 255);
   --border-strong: oklch(0.86 0.009 255);
   --input: oklch(0.922 0.006 255);
@@ -154,7 +158,7 @@
   --popover-foreground: oklch(0.235 0.016 62);
   --muted: oklch(0.937 0.017 86);
   --muted-foreground: oklch(0.475 0.021 68);
-  --subtle-foreground: oklch(0.6 0.021 72);
+  --subtle-foreground: oklch(0.508 0.021 72);
   --border: oklch(0.878 0.022 82);
   --border-strong: oklch(0.79 0.03 78);
   --input: oklch(0.878 0.022 82);
@@ -233,7 +237,8 @@
   --popover-foreground: oklch(0.972 0.002 286);
   --muted: oklch(0.222 0.007 286);
   --muted-foreground: oklch(0.715 0.009 286);
-  --subtle-foreground: oklch(0.6 0.009 286);
+  /* Dark canvas inverts the direction: subtle must be *lighter*, not darker. */
+  --subtle-foreground: oklch(0.67 0.009 286);
   --border: oklch(0.272 0.008 286);
   --border-strong: oklch(0.36 0.01 286);
   --input: oklch(0.272 0.008 286);

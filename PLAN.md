@@ -24,7 +24,9 @@ a live URL, and all four routes (`/`, `/d`, `/d/paper`, `/d/studio`) render corr
 | **It's free** | AnyRouter | Free models built in — the differentiator |
 | It's compatible | Plugins | Existing Claude plugins and skills drop in |
 | It's safe | Control | Checks in before anything irreversible |
-| Convert | Pricing → FAQ → CTA | |
+| Convert | FAQ → CTA | |
+
+Pricing was cut after the first build — see "Changes from the original plan".
 
 ## Phases
 
@@ -38,88 +40,118 @@ a live URL, and all four routes (`/`, `/d`, `/d/paper`, `/d/studio`) render corr
 
 **Verify:** `pnpm dev` boots on :3000.
 
-### Phase 1 — Design system `[ ]`
+### Phase 1 — Design system `[x]`
 
-- [ ] `src/styles.css` — Tailwind v4 `@theme` with semantic tokens, then three
+- [x] `src/styles.css` — Tailwind v4 `@theme` with semantic tokens, then three
       `[data-theme="…"]` blocks re-pointing them
-- [ ] `src/components/theme.tsx` — `ThemeScope` applying `data-theme` + per-variant font class
-- [ ] Self-host Inter; add serif display face for `paper`, mono for `studio` labels
-- [ ] Shared primitives: `Section`, `Eyebrow`, `Headline` (two-tone), `Card`, `Badge`, `Button`
+- [x] `src/components/landing/theme-scope.tsx` — `ThemeScope` applying `data-theme`
+- [x] Self-host Inter; add serif display face for `paper`, mono for `studio` labels
+- [x] Shared primitives: `Section`, `Container`, `Eyebrow`, `Headline` (two-tone), `Lede`,
+      `SectionHeader`, `IconBox`. Card/Badge/Button come from the shadcn registry, not here.
 
 **Token contract** — every section may use only these:
-`background` `surface` `surface-muted` `foreground` `muted-foreground` `border` `accent`
-`accent-foreground` `accent-muted` `ring` · `font-display` `font-sans` `font-mono` ·
-`rounded-card` `rounded-pill` · `shadow-card`
+`background` `surface` `surface-muted` `foreground` `muted-foreground` `subtle-foreground`
+`border` `border-strong` `brand` `brand-foreground` `brand-muted` `brand-soft` `ring`, plus the
+shadcn set (`card` `primary` `secondary` `muted` `accent` `destructive` `input`) ·
+`font-display` `font-sans` `font-mono` · `rounded-card` `rounded-control` `rounded-pill` ·
+`shadow-card` `shadow-lift` · `eyebrow` `hero-wash` `tabular`
+
+**Note:** the brand colour is `brand`, NOT `accent`. The generated shadcn components already use
+`accent` to mean "subtle hover surface"; the two collided, so brand was renamed.
 
 **Verify:** flipping `data-theme` on `<html>` in devtools restyles the whole page with zero
 layout shift.
 
-### Phase 2 — Content `[ ]`
+### Phase 2 — Content `[x]`
 
-- [ ] `src/content/site.ts` — every string on the page, typed. Nav, hero, capabilities (6),
+- [x] `src/content/site.ts` — every string on the page, typed. Nav, hero, capabilities (6),
       steps (3), skills (6), model providers, tool connections, anyrouter, plugins, control,
-      pricing (3), faq (6), footer
-- [ ] `status: "live" | "soon"` on every integration — nothing fictional rendered as shipped
+      faq (6), footer
+- [x] `status: "live" | "soon"` on every integration — nothing fictional rendered as shipped
 
 **Verify:** grep the `landing/` folder for quoted prose — there should be none.
 
-### Phase 3 — Sections `[ ]`
+### Phase 3 — Sections `[x]`
 
 In page order, one file each in `src/components/landing/`:
 
-- [ ] `nav.tsx` — sticky, blurred, mobile sheet
-- [ ] `hero.tsx` — two-tone headline, dual CTA, flow diagram (You ask → AnyWorker → Your tools)
-- [ ] `capabilities.tsx` — 6-card grid
-- [ ] `how-it-works.tsx` — flow panel + 3 numbered steps
-- [ ] `skills.tsx` — role cards with "Works with" / "Checks in" footers
-- [ ] `connections.tsx` — model providers + everyday tools, inline SVG logos
-- [ ] `anyrouter.tsx` — free-models differentiator, visually the loudest block
-- [ ] `plugins.tsx` — Claude plugin compatibility
-- [ ] `control.tsx` — approval gates, audit trail, local-first
-- [ ] `pricing.tsx` — Free / Pro / Team
-- [ ] `faq.tsx` — Base UI Accordion
-- [ ] `cta.tsx` + `footer.tsx`
-- [ ] `logos.tsx` — inline brand SVGs (currentColor where the mark allows)
+- [x] `nav.tsx` — sticky, blurred, mobile sheet
+- [x] `hero.tsx` — two-tone headline, dual CTA, flow diagram (You ask → AnyWorker → Your tools)
+- [x] `capabilities.tsx` — 6-card grid
+- [x] `how-it-works.tsx` — flow panel + 3 numbered steps
+- [x] `skills.tsx` — role cards with "Works with" / "Checks in" footers
+- [x] `connections.tsx` — model providers + everyday tools, inline SVG logos
+- [x] `anyrouter.tsx` — free-models differentiator, visually the loudest block
+- [x] `plugins.tsx` — Claude plugin compatibility
+- [x] `control.tsx` — approval gates, audit trail, local-first
+- [x] `faq.tsx` — Base UI Accordion
+- [x] `cta.tsx` + `footer.tsx`
+- [x] `logos.tsx` — inline brand SVGs (currentColor where the mark allows)
 
 **Verify:** each section renders identically-structured in all three themes.
 
-### Phase 4 — Routes `[ ]`
+### Phase 4 — Routes `[x]`
 
-- [ ] `routes/index.tsx` → `clarity` · `routes/d/paper.tsx` · `routes/d/studio.tsx`
-- [ ] `routes/d/index.tsx` — variant picker with screenshots-in-page
-- [ ] `__root.tsx` — real title/description/OG, favicon, drop devtools from prod build
-- [ ] Prerender all routes to static HTML
+- [x] `routes/index.tsx` → `clarity` · `routes/d/paper.tsx` · `routes/d/studio.tsx`
+- [x] `routes/d/index.tsx` — variant picker with screenshots-in-page
+- [x] `__root.tsx` — real title/description/OG, favicon, drop devtools from prod build
+- [x] Prerender all routes to static HTML
 
 **Verify:** `dist/client` contains an `index.html` per route.
 
-### Phase 5 — Hono API `[ ]`
+### Phase 5 — Hono API `[x]`
 
-- [ ] `src/routes/api/$.ts` — Hono app mounted at `/api`
-- [ ] `GET /api/health` → `{ ok: true }`
-- [ ] `POST /api/waitlist` → validates email, 202. No storage yet (no KV provisioned) —
+- [x] `src/routes/api/$.ts` — Hono app mounted at `/api`
+- [x] `GET /api/health` → `{ ok: true }`
+- [x] `POST /api/waitlist` → validates email, 202. No storage yet (no KV provisioned) —
       log only, and say so in the response
 
 **Verify:** `curl localhost:3000/api/health` → 200.
 
-### Phase 6 — Cloudflare Workers `[ ]`
+### Phase 6 — Cloudflare Workers `[x]`
 
-- [ ] `wrangler.jsonc` — name `anyworker-web`, `main: dist/server/index.js`,
-      `assets: { directory: dist/client, binding: ASSETS }`, `compatibility_date`,
-      `nodejs_compat`, observability on
-- [ ] Vite config for the Workers target
-- [ ] `pnpm cf-typegen` → `worker-configuration.d.ts`
-- [ ] `pnpm deploy`
+- [x] `wrangler.jsonc` — name `anyworker-web`, `main: "@tanstack/react-start/server-entry"`
+      (a package specifier, not a dist path — the vite plugin resolves it and populates the
+      assets directory itself), `compatibility_date`, `nodejs_compat`, observability on
+- [x] Vite config for the Workers target
+- [x] `pnpm cf-typegen` → `worker-configuration.d.ts`
+- [x] `pnpm deploy`
 
 **Verify:** deployed URL returns 200 with correct HTML; `/api/health` returns JSON.
 
-### Phase 7 — Quality `[ ]`
+### Phase 7 — Quality `[~]`
 
-- [ ] Responsive pass at 375 / 768 / 1440
-- [ ] Keyboard traversal + visible focus rings, all three themes
-- [ ] Contrast audit — `studio` and `paper` are the risky ones
-- [ ] `prefers-reduced-motion` fallbacks
-- [ ] Lighthouse ≥ 95 performance / 100 a11y on `/`
-- [ ] `git init` + commit
+- [x] Responsive pass at 375 — verified zero horizontally-overflowing elements
+- [x] Contrast audit — found and fixed two real AA failures (below)
+- [x] Lighthouse on all three variants: **a11y 100, best practices 100, SEO 100**
+- [x] `prefers-reduced-motion` fallback (global, in `styles.css`)
+- [x] `git init` + commit
+- [ ] **Not done:** manual keyboard traversal of all three themes
+- [ ] **Not done:** Lighthouse *performance* score — the audit run covers a11y / SEO / best
+      practices only; performance needs a separate trace
+- [ ] **Not done:** visual pass at 768 and 1440 below the hero fold
+
+## Changes from the original plan
+
+- **Pricing removed** on request. The nav slot became "Plugins", the footer slot became "Free
+  models" (`#free-models`, a new id on the AnyRouter section), and the "Is it really free?" FAQ
+  answer was rewritten so it no longer references plan tiers that are no longer shown.
+- **Brand token renamed** `accent` → `brand`, because the generated shadcn components already
+  define `accent` as a hover surface and the two meanings collided.
+- **Theme moved off `<html>`.** The plan put `data-theme` on the root element via a router hook
+  in `shellComponent`. That shell renders *outside* the router context, so the hook threw in dev
+  — it happened to work during the production prerender, which made it a latent fragility rather
+  than a safe shortcut. The theme now lives on a `ThemeScope` wrapper inside each route, and
+  `html:has([data-theme=…])` mirrors only the two properties that must sit on the root element:
+  the overscroll background and `color-scheme`.
+- **Three accessibility bugs the audit caught that inspection did not:**
+  1. `subtle-foreground` was 3.34:1 on white, under the 4.5:1 AA floor. Darkened in all three
+     themes; it now sits just above `muted-foreground`, so the hierarchy step below it comes
+     from size and weight rather than a lighter grey.
+  2. "Soon" pills used `opacity-60`, dragging their labels to 4.48:1. Replaced with a dashed
+     border — the "soon" badge already carried the meaning.
+  3. All seven link-styled `Button`s needed `nativeButton={false}`; Base UI strips button
+     semantics otherwise and logged an error for each.
 
 ## Risks
 

@@ -43,7 +43,10 @@ function Row({ label, sub, items }: RowProps) {
             <span
               className={cn(
                 "inline-flex items-center gap-2.5 rounded-control border border-border bg-surface px-4 py-3 text-sm font-medium",
-                item.status === "soon" && "opacity-60"
+                // Recede unshipped items via the mark and the border only. Fading
+                // the label too drops it under the 4.5:1 AA floor, and the "soon"
+                // badge already carries the meaning without costing legibility.
+                item.status === "soon" && "border-dashed"
               )}
             >
               <span aria-hidden="true" className="flex shrink-0">
