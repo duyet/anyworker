@@ -3,11 +3,8 @@ import { cn } from "@/lib/utils"
 /**
  * The AnyWorker "AW" mark.
  *
- * Built in the same construction language as the AnyRouter "AR" mark: chevron
- * letterforms with no crossbar, uniform mitred strokes, monochrome, inheriting
- * `currentColor` so it works on all three themes without a second asset. The two
- * products should read as siblings, so the A is deliberately identical in
- * proportion to AnyRouter's and only the second letter changes.
+ * Sibling to the AnyRouter "AR" mark: heavy filled monogram letterforms,
+ * monochrome, inheriting `currentColor` so it works on all themes.
  *
  * Keep this in sync with public/brand/anyworker-logo*.svg.
  */
@@ -16,16 +13,12 @@ export function AnyWorkerMark({ className }: { className?: string }) {
     <svg
       viewBox="0 0 512 512"
       className={cn("size-6", className)}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={62}
-      strokeLinecap="butt"
-      strokeLinejoin="miter"
+      fill="currentColor"
       role="img"
       aria-label="AnyWorker"
     >
-      <path d="M40 432 150 80 260 432" />
-      <path d="M286 80 330 432 383 208 436 432 480 80" />
+      <path d="M148 40 12 472h92l40-136 40 136h92L148 40z" />
+      <path d="M292 40h70l32 236 32-236h70l-58 432h-72l-32-220-32 220h-72L292 40z" />
     </svg>
   )
 }

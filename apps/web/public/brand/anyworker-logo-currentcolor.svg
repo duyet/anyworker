@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="62" stroke-linecap="butt" stroke-linejoin="miter">
-  <path d="M40 432 150 80 260 432"/>
-  <path d="M286 80 330 432 383 208 436 432 480 80"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+  <!-- Filled AW monogram — sibling to AnyRouter AR: solid heavy letterforms. -->
+  <path d="M148 40 12 472h92l40-136 40 136h92L148 40z"/>
+  <path d="M292 40h70l32 236 32-236h70l-58 432h-72l-32-220-32 220h-72L292 40z"/>
 </svg>

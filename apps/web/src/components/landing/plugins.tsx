@@ -7,7 +7,7 @@ import {
 import { Card, CardDescription, CardHeader } from "@/components/ui/card"
 import { plugins } from "@/content/site"
 import type { LucideIcon } from "lucide-react"
-import { Plug, Puzzle, Sparkles, Terminal } from "lucide-react"
+import { BookOpen, Plug, Puzzle, Terminal } from "lucide-react"
 
 /**
  * A reassurance beat: what you already built for Claude carries over. Kept
@@ -17,7 +17,7 @@ import { Plug, Puzzle, Sparkles, Terminal } from "lucide-react"
 
 const ICONS = {
   Puzzle,
-  Sparkles,
+  BookOpen,
   Plug,
   Terminal,
 } satisfies Record<string, LucideIcon>

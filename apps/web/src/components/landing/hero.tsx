@@ -1,33 +1,26 @@
-import { ArrowRight, Check, Sparkles } from "lucide-react"
+import { ArrowRight, Check } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { HeroStudio } from "@/components/landing/hero-studio"
+import { FeatureRelay } from "@/components/landing/feature-relay"
 import { Container, Headline, Lede } from "@/components/landing/primitives"
+import { Button } from "@/components/ui/button"
 import { hero } from "@/content/site"
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border hero-wash">
-      <Container className="flex flex-col items-center py-20 text-center sm:py-28">
-        <Badge
-          variant="outline"
-          className="h-7 gap-1.5 px-3 eyebrow text-brand"
-        >
-          <Sparkles className="size-3" aria-hidden="true" />
-          {hero.eyebrow}
-        </Badge>
+    <section className="relative overflow-hidden border-b border-border">
+      <Container className="flex flex-col items-center pt-16 text-center sm:pt-20">
+        <p className="text-sm text-muted-foreground">{hero.eyebrow}</p>
 
         <Headline
           as="h1"
           size="xl"
           lines={hero.headline}
-          className="mt-6 max-w-4xl"
+          className="mt-4 max-w-3xl"
         />
 
-        <Lede className="mt-6 max-w-2xl">{hero.body}</Lede>
+        <Lede className="mt-5 max-w-xl">{hero.body}</Lede>
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button
             nativeButton={false}
             size="lg"
@@ -48,20 +41,23 @@ export function Hero() {
           </Button>
         </div>
 
-        <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
           {hero.proofPoints.map((point) => (
             <li
               key={point}
-              className="flex items-center gap-2 text-sm text-muted-foreground"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground"
             >
-              <Check className="size-4 text-brand" aria-hidden="true" />
+              <Check className="size-3.5 text-brand" aria-hidden="true" />
               {point}
             </li>
           ))}
         </ul>
-
-        <HeroStudio />
       </Container>
+
+      {/* Full-bleed painted stage + floating product windows */}
+      <div className="mt-8 w-full px-3 pb-10 sm:mt-10 sm:px-6 sm:pb-14 lg:px-10">
+        <FeatureRelay />
+      </div>
     </section>
   )
 }

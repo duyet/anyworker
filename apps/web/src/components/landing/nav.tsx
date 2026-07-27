@@ -28,11 +28,11 @@ const LINK_STYLE =
 
 export function SiteNav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <Container className="flex h-16 items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/55 backdrop-blur-md supports-[backdrop-filter]:bg-background/45">
+      <Container className="flex h-14 items-center justify-between gap-6 sm:h-16">
         <a href="/" className="flex items-center gap-2.5">
           <AnyWorkerMark className="size-6 text-foreground" />
-          <span className="font-display text-lg">{site.name}</span>
+          <span className="font-display text-lg tracking-tight">{site.name}</span>
         </a>
 
         <nav className="hidden items-center gap-7 md:flex">

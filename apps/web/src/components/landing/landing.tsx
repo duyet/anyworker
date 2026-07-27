@@ -1,5 +1,4 @@
 import { AnyRouter } from "@/components/landing/anyrouter"
-import { Capabilities } from "@/components/landing/capabilities"
 import { Connections } from "@/components/landing/connections"
 import { Control } from "@/components/landing/control"
 import { Faq } from "@/components/landing/faq"
@@ -15,9 +14,9 @@ import type { ThemeId } from "@/content/site"
 
 /**
  * The whole page, in narrative order. All three design directions render this
- * exact tree — the only thing that differs is the `theme` passed in. There is no
- * per-variant branching anywhere below this component, and adding one would
- * defeat the point of the token contract.
+ * exact tree — the only thing that differs is the `theme` passed in.
+ *
+ * Capabilities icon grid removed: product proof lives in the hero feature relay.
  */
 export function Landing({ theme }: { theme: ThemeId }) {
   return (
@@ -25,7 +24,6 @@ export function Landing({ theme }: { theme: ThemeId }) {
       <SiteNav />
       <main>
         <Hero />
-        <Capabilities />
         <HowItWorks />
         <Skills />
         <Connections />

@@ -37,21 +37,70 @@ export const nav = {
 } as const
 
 export const hero = {
-  eyebrow: "Works while you don't",
-  /** Rendered as three lines; `accent: true` paints the line in the theme accent. */
+  /** Quiet product line — no sparkle badge. */
+  eyebrow: "AI coworker for people who don't code",
   headline: [
     { text: "Ask for the outcome.", accent: false },
-    { text: "AnyWorker handles", accent: false },
-    { text: "the steps.", accent: true },
+    { text: "It handles the steps.", accent: true },
   ],
-  body: "Tell it what you need, not how to do it. AnyWorker opens your files, drafts the document, updates the sheet and sends the message — then hands you finished work to review. It checks in before anything that matters.",
+  body: "AnyWorker opens your files, drafts the document, and sends the message. You review finished work. It checks in before anything that matters.",
   primaryCta: { label: "Start free", href: "#get-started" },
-  secondaryCta: { label: "Try the product UI", href: "#product-demo" },
-  /** Short, checkable claims. Nothing here is a number we cannot back up. */
+  secondaryCta: { label: "See it work", href: "#product-demo" },
   proofPoints: [
     "Free models built in",
     "No API key to set up",
     "Runs your Claude plugins",
+  ],
+} as const
+
+/**
+ * Cursor-style feature relay: timed live product windows over the painted stage.
+ * Each scene is interactive UI — not a screenshot carousel.
+ */
+export const heroRelay = {
+  intervalMs: 6500,
+  stageAlt: "Oil painting landscape behind the product demo",
+  scenes: [
+    {
+      id: "delegate",
+      label: "Delegate",
+      stage: "peaks" as const,
+      primaryTitle: "AnyWorker",
+      secondaryTitle: null as string | null,
+      caption: "Describe the outcome. Watch the steps.",
+    },
+    {
+      id: "checkin",
+      label: "Check-in",
+      stage: "peaks" as const,
+      primaryTitle: "AnyWorker",
+      secondaryTitle: "Slack · #exec",
+      caption: "It waits for you before anything is sent.",
+    },
+    {
+      id: "tools",
+      label: "Control",
+      stage: "coast" as const,
+      primaryTitle: "AnyWorker · Tools",
+      secondaryTitle: null as string | null,
+      caption: "You choose what runs free and what asks first.",
+    },
+    {
+      id: "compose",
+      label: "Compose",
+      stage: "coast" as const,
+      primaryTitle: "AnyWorker",
+      secondaryTitle: "Workspace",
+      caption: "Same free models and tools as the desktop app.",
+    },
+    {
+      id: "unattended",
+      label: "Background",
+      stage: "peaks" as const,
+      primaryTitle: "AnyWorker",
+      secondaryTitle: "Schedule",
+      caption: "Close the lid. The report is waiting when you return.",
+    },
   ],
 } as const
 
@@ -401,7 +450,7 @@ export const plugins = {
       body: "Existing Claude plugin bundles load unchanged.",
     },
     {
-      icon: "Sparkles",
+      icon: "BookOpen",
       title: "Skills",
       body: "Skill folders with frontmatter are picked up as-is.",
     },
@@ -515,9 +564,9 @@ export const footer = {
     {
       title: "Design variants",
       links: [
-        { label: "Studio", href: "/" },
+        { label: "Paper", href: "/" },
         { label: "Clarity", href: "/d/clarity" },
-        { label: "Paper", href: "/d/paper" },
+        { label: "Studio", href: "/d/studio" },
         { label: "Compare all", href: "/d" },
       ],
     },
@@ -528,11 +577,11 @@ export const footer = {
 /** The three design directions, used by the /d picker and the route files. */
 export const variants = [
   {
-    id: "studio",
-    name: "Studio",
+    id: "paper",
+    name: "Paper",
     href: "/",
     summary:
-      "Near-black canvas, lime accent, mono microtype. Instrument-panel energy.",
+      "Warm cream, clay accent, painted stage. Cursor-style product windows.",
     notes: "The chosen direction — this is what ships at anyworker.dev.",
   },
   {
@@ -545,13 +594,12 @@ export const variants = [
       "Safest converter. Closest to what people expect from this category.",
   },
   {
-    id: "paper",
-    name: "Paper",
-    href: "/d/paper",
+    id: "studio",
+    name: "Studio",
+    href: "/d/studio",
     summary:
-      "Warm cream, clay accent, Fraunces serif display. Editorial and calm.",
-    notes:
-      "Reads human rather than technical — fits the non-technical audience.",
+      "Near-black canvas, lime accent, mono microtype. Instrument-panel energy.",
+    notes: "Dark alternate — keep for exploration at /d/studio.",
   },
 ] as const
 
