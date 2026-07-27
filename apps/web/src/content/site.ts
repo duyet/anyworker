@@ -58,154 +58,161 @@ export const hero = {
  * Each scene is interactive UI — not a screenshot carousel.
  */
 export const heroRelay = {
-  intervalMs: 6500,
+  intervalMs: 7000,
   stageAlt: "Oil painting landscape behind the product demo",
   scenes: [
     {
-      id: "delegate",
-      label: "Delegate",
+      id: "session",
+      label: "Session",
       stage: "peaks" as const,
-      primaryTitle: "AnyWorker",
-      secondaryTitle: null as string | null,
-      caption: "Describe the outcome. Watch the steps.",
+      caption: "A full coworker app — sessions, progress, and approvals.",
     },
     {
       id: "checkin",
-      label: "Check-in",
+      label: "Approval",
       stage: "peaks" as const,
-      primaryTitle: "AnyWorker",
-      secondaryTitle: "Slack · #exec",
-      caption: "It waits for you before anything is sent.",
+      caption: "It waits before sending, publishing, or deleting.",
     },
     {
-      id: "tools",
-      label: "Control",
+      id: "home",
+      label: "Home",
       stage: "coast" as const,
-      primaryTitle: "AnyWorker · Tools",
-      secondaryTitle: null as string | null,
-      caption: "You choose what runs free and what asks first.",
+      caption: "Start from a greeting, or pick up an active job.",
     },
     {
-      id: "compose",
-      label: "Compose",
+      id: "access",
+      label: "Access",
       stage: "coast" as const,
-      primaryTitle: "AnyWorker",
-      secondaryTitle: "Workspace",
-      caption: "Same free models and tools as the desktop app.",
+      caption: "Browser, files, and tools — only what you grant.",
     },
     {
-      id: "unattended",
-      label: "Background",
+      id: "automations",
+      label: "Schedule",
       stage: "peaks" as const,
-      primaryTitle: "AnyWorker",
-      secondaryTitle: "Schedule",
-      caption: "Close the lid. The report is waiting when you return.",
+      caption: "Hand off recurring work. It keeps going unattended.",
     },
   ],
 } as const
 
 /**
- * Product UI demo in the hero — real interactive components (Button, Badge,
- * Card, Tabs), not a static picture. Scenario copy is fixed; no live agent.
+ * OpenWorker-style product shell in the hero demo.
+ * Three panes: sessions · conversation · progress/artifacts/access.
  */
 export const heroStudio = {
   appName: "AnyWorker",
+  beta: "Beta",
+  newSession: "New session",
+  search: "Search",
+  automations: "Automations",
+  recent: "Recent",
+  userName: "You",
+  model: "AnyRouter · free",
   statusLabel: "Needs approval",
   statusDone: "Sent",
   statusEdit: "Editing",
-  caption: "Interactive product UI — try Approve, Composer, and Tools",
   sidebar: {
-    tasksLabel: "Sessions",
-    tasks: [
-      { name: "Board update — Q3", state: "running" },
-      { name: "Weekly marketing report", state: "scheduled" },
-      { name: "Inbox triage", state: "done" },
-    ],
-    connectionsLabel: "Connections",
-    connections: [
-      { name: "Google Drive", logo: "gdrive" },
-      { name: "Slack", logo: "slack" },
-      { name: "Gmail", logo: "gmail" },
+    sessions: [
+      { name: "Board update — Q3", state: "running" as const },
+      { name: "Weekly marketing report", state: "scheduled" as const },
+      { name: "Inbox triage", state: "done" as const },
     ],
   },
   task: {
     title: "Board update — Q3",
-    meta: "AnyRouter · free model",
-    youLabel: "You",
     prompt: "Pull the Q3 numbers and send the board update.",
     steps: [
       {
         label: "Read",
         detail: "Q3-forecast.xlsx",
         tool: "Drive",
-        state: "done",
+        state: "done" as const,
       },
       {
         label: "Checked",
         detail: "3 figures against last month",
         tool: "",
-        state: "done",
+        state: "done" as const,
       },
       {
         label: "Drafted",
         detail: "board-update.docx",
         tool: "Docs",
-        state: "done",
+        state: "done" as const,
       },
       {
         label: "Waiting",
         detail: "Send to #exec",
         tool: "Slack",
-        state: "waiting",
+        state: "waiting" as const,
       },
     ],
     approveLabel: "Approve & send",
     editLabel: "Edit first",
-    checkInNote: "Checks in before anything is sent",
   },
   approval: {
     title: "Approval required",
-    body: "AnyWorker wants to send a message in Slack. Review the draft, then allow once or edit.",
-    sent: "Message queued for #exec. Full transcript stays in this session.",
+    body: "Send a message in Slack · #exec. Review the draft, then allow once or edit.",
+    draftPreview:
+      "Q3 board update ready — three figures checked against last month.",
+    sent: "Message queued for #exec.",
     editNote: "Draft opened for edit. Nothing was sent.",
   },
-  composer: {
-    title: "Composer",
-    hint: "Same control you use in the desktop app — outcome first, not a chat prompt.",
-    placeholder: "Ask for an outcome — a memo, a brief, a sent message…",
-    attach: "Attach",
-    folder: "Workspace",
-    send: "Send",
-    footer: "Enter to send · Shift+Enter for a new line",
+  progress: {
+    title: "Progress",
+    body: "For longer multi-step tasks, progress appears here while AnyWorker plans, uses tools, waits for approval, and produces artifacts.",
   },
-  tools: [
-    {
-      name: "Read",
-      detail: "Open a file in the workspace",
-      risk: "auto" as const,
-    },
-    {
-      name: "Write",
-      detail: "Create or update a deliverable",
-      risk: "ask" as const,
-    },
-    {
-      name: "Bash",
-      detail: "Run a shell command",
-      risk: "ask" as const,
-    },
-    {
-      name: "WebSearch",
-      detail: "Look up a current fact",
-      risk: "auto" as const,
-    },
-  ],
-  toolsUi: {
-    askBadge: "Ask",
-    autoBadge: "Auto",
-    allow: "Allow once",
-    deny: "Deny",
-    auto: "Runs without asking",
+  artifacts: {
+    title: "Artifacts",
+    empty: "No previewable files yet.",
+    items: [
+      { name: "board-update.docx", kind: "Docs" },
+      { name: "Q3-figures.csv", kind: "Sheet" },
+    ],
+  },
+  access: {
+    title: "Access",
+    items: [
+      { name: "Browser", detail: "Allowed" },
+      { name: "GitHub", detail: "1 folder" },
+      { name: "Google Drive", detail: "Q3 folder" },
+      { name: "Slack", detail: "#exec" },
+    ],
+  },
+  composer: {
+    placeholder: "Ask the coworker… (drop or paste files)",
+    approvalMode: "Ask for approval",
+    modelPicker: "AnyRouter · free",
+  },
+  home: {
+    greeting: "Hello",
+    greetingSub: "What should we finish today?",
+    helper: "How can I help you today?",
+    activeLabel: "Active",
+    active: [
+      { name: "Board update — Q3", when: "Running now" },
+      { name: "Weekly marketing report", when: "Every Monday · 8:00" },
+      { name: "Inbox triage", when: "2 days ago" },
+    ],
+  },
+  automationsPanel: {
+    title: "Automations",
+    items: [
+      {
+        name: "Weekly marketing report",
+        when: "Every Monday · 8:00",
+        status: "On",
+      },
+      {
+        name: "Slack mention triage",
+        when: "On @AnyWorker",
+        status: "On",
+      },
+      {
+        name: "Month-end pack",
+        when: "Last weekday · 17:00",
+        status: "Off",
+      },
+    ],
   },
 } as const
 
