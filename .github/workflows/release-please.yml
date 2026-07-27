@@ -1,0 +1,59 @@
+name: Release Please
+
+# Watches conventional commits on master. Maintains standing release PRs:
+#   chore(main): release web v0.1.x
+#   chore(main): release app v0.1.x
+# Merging a release PR tags the version, updates CHANGELOG.md, then we
+# dispatch release.yml to publish GitHub Release assets.
+#
+# Versioning is always-bump-patch → stays on v0.1.x until you change config.
+#
+# Requires: Settings → Actions → General → "Allow GitHub Actions to create
+# and approve pull requests".
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .github/release-please-config.json
+          manifest-file: .github/.release-please-manifest.json
+
+      # GITHUB_TOKEN releases do not re-trigger other workflows; dispatch builds.
+      - name: Trigger web release build
+        if: steps.release.outputs['apps/web--release_created'] == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run release.yml -R "${{ github.repository }}" \
+            -f component=web \
+            -f tag="${{ steps.release.outputs['apps/web--tag_name'] }}"
+
+      - name: Trigger app release build
+        if: steps.release.outputs['apps/anyworker--release_created'] == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run release.yml -R "${{ github.repository }}" \
+            -f component=app \
+            -f tag="${{ steps.release.outputs['apps/anyworker--tag_name'] }}"

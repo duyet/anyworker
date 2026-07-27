@@ -1,0 +1,96 @@
+name: Release assets
+
+# Invoked after a release-please PR is merged (workflow_dispatch from
+# release-please.yml). Builds artifacts and attaches them to the GitHub Release.
+# CHANGELOG.md is already updated by release-please on that merge.
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: "web | app"
+        required: true
+        type: choice
+        options: [web, app]
+      tag:
+        description: "Git tag (e.g. web-v0.1.1 or app-v0.1.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  release-web:
+    if: inputs.component == 'web'
+    name: Release web
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @anyworker/web build
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tar -czf "anyworker-web-${{ inputs.tag }}.tgz" -C apps/web dist
+          gh release upload "${{ inputs.tag }}" \
+            "anyworker-web-${{ inputs.tag }}.tgz" \
+            --clobber \
+            -R "${{ github.repository }}"
+      - name: Deploy production
+        working-directory: apps/web
+        run: pnpm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  release-app:
+    if: inputs.component == 'app'
+    name: Release app
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: pnpm install --frozen-lockfile
+      - name: Package
+        run: bash scripts/package-app.sh
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+      - name: Zip package dir
+        run: |
+          cd dist/app
+          zip -qr "../../anyworker-app-${{ inputs.tag }}.zip" .
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ inputs.tag }}" \
+            "anyworker-app-${{ inputs.tag }}.zip" \
+            --clobber \
+            -R "${{ github.repository }}"
