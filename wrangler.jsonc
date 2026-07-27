@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "anyworker-web",
+  "compatibility_date": "2026-07-27",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // A package specifier, not a file path: @cloudflare/vite-plugin resolves and
+  // bundles the Start server entry itself, and populates the static-assets
+  // directory from the client build. Pointing this at a dist/ file is the old
+  // nitro-era pattern and will not work here.
+  "main": "@tanstack/react-start/server-entry",
+
+  "observability": { "enabled": true }
+}
