@@ -107,7 +107,7 @@ export function FeatureRelay() {
           />
         ))}
         <div
-          className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background/70"
+          className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/5 to-background/85"
           aria-hidden="true"
         />
       </div>
@@ -163,7 +163,7 @@ export function FeatureRelay() {
 
         {/* Scene dots + caption */}
         <div className="relative z-20 mx-auto mt-5 flex w-full max-w-3xl flex-col items-center gap-3">
-          <p className="text-center text-xs text-foreground/80 drop-shadow-sm sm:text-sm">
+          <p className="text-center text-xs text-white/90 drop-shadow-sm sm:text-sm">
             {scene.caption}
           </p>
           <div
@@ -180,10 +180,10 @@ export function FeatureRelay() {
                 aria-label={s.label}
                 onClick={() => go(i)}
                 className={cn(
-                  "rounded-pill px-2.5 py-1 text-[0.7rem] font-medium transition-colors",
+                  "rounded-pill px-2.5 py-1 text-[0.7rem] font-medium transition-colors backdrop-blur-sm",
                   i === index
-                    ? "bg-foreground text-background"
-                    : "bg-background/70 text-foreground/70 hover:bg-background/90"
+                    ? "bg-white text-neutral-900 shadow-sm"
+                    : "bg-black/25 text-white/90 hover:bg-black/40"
                 )}
               >
                 {s.label}
@@ -210,8 +210,7 @@ function DemoShell({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-card border border-border/80 bg-surface text-left shadow-lift",
-        "ring-1 ring-black/5"
+        "demo-window overflow-hidden rounded-[0.75rem] border text-left"
       )}
     >
       <div className="flex items-center gap-3 border-b border-border bg-surface-muted px-3 py-2 sm:px-4">
@@ -224,7 +223,9 @@ function DemoShell({
           {title}
         </p>
       </div>
-      <div className={cn(compact ? "p-3" : "min-h-[14rem]")}>{children}</div>
+      <div className={cn("bg-surface", compact ? "p-3" : "min-h-[14rem]")}>
+        {children}
+      </div>
     </div>
   )
 }
@@ -277,11 +278,11 @@ function RunScene({
       </div>
 
       <div className="flex flex-col gap-3 p-4">
-        <div className="self-end max-w-[85%] rounded-card rounded-br-sm bg-brand-muted px-3 py-2">
-          <p className="text-[0.65rem] font-medium text-brand/80">
+        <div className="self-end max-w-[85%] rounded-card rounded-br-sm bg-muted px-3 py-2">
+          <p className="text-[0.65rem] font-medium text-muted-foreground">
             {task.youLabel}
           </p>
-          <p className="mt-0.5 text-sm text-brand">{task.prompt}</p>
+          <p className="mt-0.5 text-sm text-foreground">{task.prompt}</p>
         </div>
 
         <ol className="flex flex-col gap-1.5" aria-label="Tool steps">

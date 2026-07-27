@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 
 import { Landing } from "@/components/landing/landing"
 
-/** Production default: paper + painted stage (Cursor-style light product chrome). */
+/** Production default: Cursor-style white UI + painted product stage. */
 export const Route = createFileRoute("/")({
-  component: () => <Landing theme="paper" />,
+  component: () => <Landing theme="clarity" />,
 })

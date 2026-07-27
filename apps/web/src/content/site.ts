@@ -564,9 +564,9 @@ export const footer = {
     {
       title: "Design variants",
       links: [
-        { label: "Paper", href: "/" },
-        { label: "Clarity", href: "/d/clarity" },
+        { label: "Clarity", href: "/" },
         { label: "Studio", href: "/d/studio" },
+        { label: "Paper", href: "/d/paper" },
         { label: "Compare all", href: "/d" },
       ],
     },
@@ -577,29 +577,28 @@ export const footer = {
 /** The three design directions, used by the /d picker and the route files. */
 export const variants = [
   {
-    id: "paper",
-    name: "Paper",
-    href: "/",
-    summary:
-      "Warm cream, clay accent, painted stage. Cursor-style product windows.",
-    notes: "The chosen direction — this is what ships at anyworker.dev.",
-  },
-  {
     id: "clarity",
     name: "Clarity",
-    href: "/d/clarity",
+    href: "/",
     summary:
-      "Light canvas, electric blue, Inter. The familiar high-conversion register.",
-    notes:
-      "Safest converter. Closest to what people expect from this category.",
+      "Pure white, black CTAs, painted stage. Cursor-style product windows.",
+    notes: "The chosen direction — this is what ships at anyworker.dev.",
   },
   {
     id: "studio",
     name: "Studio",
     href: "/d/studio",
     summary:
-      "Near-black canvas, lime accent, mono microtype. Instrument-panel energy.",
-    notes: "Dark alternate — keep for exploration at /d/studio.",
+      "Near-black canvas, white CTAs. x.ai-style dark product chrome.",
+    notes: "Dark alternate at /d/studio.",
+  },
+  {
+    id: "paper",
+    name: "Paper",
+    href: "/d/paper",
+    summary:
+      "Warm cream, clay accent, Fraunces. Editorial light variant.",
+    notes: "Kept for comparison at /d/paper.",
   },
 ] as const
 
