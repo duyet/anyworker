@@ -79,7 +79,7 @@ Resource names prefixed `anyworker-`. Never commit `.env.local` / `.dev.vars`.
 
 ## CI
 
-- Default branch: **master**
+- Default branch: **main**
 - Web deploys on every mainline change under `apps/web` (`.github/workflows/deploy-web.yml`)
 - App packages on every mainline change under `apps/anyworker` (artifacts + commit comment)
 - Releases: release-please on `apps/web` + `apps/anyworker`, patch-only `0.1.x`

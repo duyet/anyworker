@@ -1,10 +1,10 @@
 name: Build app
 
-# On every push to master: package the app and attach downloadable artifacts
+# On every push to main: package the app and attach downloadable artifacts
 # to the workflow run; leave a commit comment with the download link.
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "apps/anyworker/**"
       - "scripts/package-app.sh"
@@ -31,8 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 24

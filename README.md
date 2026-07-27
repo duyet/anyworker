@@ -37,10 +37,10 @@ uv run anyworker-server
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `ci.yml` | PR + push to `master` | typecheck/build web + gui, pytest server |
-| `deploy-web.yml` | push `master` (paths: `apps/web/**`) | always deploy Worker to Cloudflare |
-| `build-app.yml` | push `master` (paths: `apps/anyworker/**`) | package app, upload artifacts, commit comment with download link |
-| `release-please.yml` | push `master` | standing release PRs for `web` + `app` (`v0.1.x` patch only) |
+| `ci.yml` | PR + push to `main` | typecheck/build web + gui, pytest server |
+| `deploy-web.yml` | push `main` (paths: `apps/web/**`) | always deploy Worker to Cloudflare |
+| `build-app.yml` | push `main` (paths: `apps/anyworker/**`) | package app, upload artifacts, commit comment with download link |
+| `release-please.yml` | push `main` | standing release PRs for `web` + `app` (`v0.1.x` patch only) |
 | `release.yml` | after merge of release-please PR | attach assets to GitHub Release (+ deploy web) |
 
 **Secrets (repo Settings → Secrets):**
