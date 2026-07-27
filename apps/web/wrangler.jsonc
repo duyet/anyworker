@@ -10,5 +10,15 @@
   // nitro-era pattern and will not work here.
   "main": "@tanstack/react-start/server-entry",
 
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+
+  // Preview URL: https://anyworker-web.<subdomain>.workers.dev
+  "workers_dev": true,
+
+  // Production Custom Domains (zone anyworker.dev is on this CF account).
+  // Cloudflare provisions DNS + TLS; no manual A/CNAME required.
+  "routes": [
+    { "pattern": "anyworker.dev", "custom_domain": true },
+    { "pattern": "www.anyworker.dev", "custom_domain": true }
+  ]
 }

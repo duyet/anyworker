@@ -16,3 +16,18 @@ todos.json
 
 # typescript
 *.tsbuildinfo
+
+# monorepo
+apps/*/.tanstack
+apps/*/.wrangler
+apps/*/dist
+apps/anyworker/server/.venv
+apps/anyworker/server/**/__pycache__
+apps/anyworker/server/.pytest_cache
+*.egg-info
+.uv
+
+# build outputs
+dist/
+apps/*/dist/
+apps/anyworker/gui/dist/

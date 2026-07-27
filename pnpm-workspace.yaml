@@ -1,4 +1,8 @@
-packages: []
+packages:
+  - "apps/*"
+  - "apps/anyworker"
+  - "apps/anyworker/gui"
+  - "packages/*"
 
 ignoreWorkspaceRootCheck: true
 

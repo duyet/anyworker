@@ -46,7 +46,7 @@ export const hero = {
   ],
   body: "Tell it what you need, not how to do it. AnyWorker opens your files, drafts the document, updates the sheet and sends the message — then hands you finished work to review. It checks in before anything that matters.",
   primaryCta: { label: "Start free", href: "#get-started" },
-  secondaryCta: { label: "See a task run", href: "#how-it-works" },
+  secondaryCta: { label: "Try the product UI", href: "#product-demo" },
   /** Short, checkable claims. Nothing here is a number we cannot back up. */
   proofPoints: [
     "Free models built in",
@@ -56,19 +56,17 @@ export const hero = {
 } as const
 
 /**
- * The product interface shown in the hero.
- *
- * A depiction of the app, not a live feed — it is static and labelled
- * "Illustrative interface" in the UI so it cannot be mistaken for a real run.
- * Model names are deliberately generic: naming a specific free model here would
- * be a claim about availability we would then have to keep true.
+ * Product UI demo in the hero — real interactive components (Button, Badge,
+ * Card, Tabs), not a static picture. Scenario copy is fixed; no live agent.
  */
 export const heroStudio = {
-  appName: "AnyWorker Studio",
-  statusLabel: "Running",
-  caption: "Illustrative interface",
+  appName: "AnyWorker",
+  statusLabel: "Needs approval",
+  statusDone: "Sent",
+  statusEdit: "Editing",
+  caption: "Interactive product UI — try Approve, Composer, and Tools",
   sidebar: {
-    tasksLabel: "Tasks",
+    tasksLabel: "Sessions",
     tasks: [
       { name: "Board update — Q3", state: "running" },
       { name: "Weekly marketing report", state: "scheduled" },
@@ -83,7 +81,7 @@ export const heroStudio = {
   },
   task: {
     title: "Board update — Q3",
-    meta: "Free model · runs unattended",
+    meta: "AnyRouter · free model",
     youLabel: "You",
     prompt: "Pull the Q3 numbers and send the board update.",
     steps: [
@@ -115,6 +113,50 @@ export const heroStudio = {
     approveLabel: "Approve & send",
     editLabel: "Edit first",
     checkInNote: "Checks in before anything is sent",
+  },
+  approval: {
+    title: "Approval required",
+    body: "AnyWorker wants to send a message in Slack. Review the draft, then allow once or edit.",
+    sent: "Message queued for #exec. Full transcript stays in this session.",
+    editNote: "Draft opened for edit. Nothing was sent.",
+  },
+  composer: {
+    title: "Composer",
+    hint: "Same control you use in the desktop app — outcome first, not a chat prompt.",
+    placeholder: "Ask for an outcome — a memo, a brief, a sent message…",
+    attach: "Attach",
+    folder: "Workspace",
+    send: "Send",
+    footer: "Enter to send · Shift+Enter for a new line",
+  },
+  tools: [
+    {
+      name: "Read",
+      detail: "Open a file in the workspace",
+      risk: "auto" as const,
+    },
+    {
+      name: "Write",
+      detail: "Create or update a deliverable",
+      risk: "ask" as const,
+    },
+    {
+      name: "Bash",
+      detail: "Run a shell command",
+      risk: "ask" as const,
+    },
+    {
+      name: "WebSearch",
+      detail: "Look up a current fact",
+      risk: "auto" as const,
+    },
+  ],
+  toolsUi: {
+    askBadge: "Ask",
+    autoBadge: "Auto",
+    allow: "Allow once",
+    deny: "Deny",
+    auto: "Runs without asking",
   },
 } as const
 
