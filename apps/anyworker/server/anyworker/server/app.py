@@ -14,6 +14,11 @@ from pydantic import BaseModel, Field
 
 from anyworker.providers.registry import list_providers
 from anyworker.server.manager import SessionManager
+from anyworker.server.routes import (
+    build_auth_router,
+    build_byok_router,
+    build_catalog_router,
+)
 
 log = logging.getLogger(__name__)
 
@@ -72,6 +77,10 @@ def create_app(manager: SessionManager) -> FastAPI:
 
             return JSONResponse({"error": "origin not allowed"}, status_code=403)
         return await call_next(request)
+
+    app.include_router(build_auth_router(manager))
+    app.include_router(build_catalog_router(manager))
+    app.include_router(build_byok_router(manager))
 
     @app.get("/v1/health")
     async def health() -> dict[str, Any]:

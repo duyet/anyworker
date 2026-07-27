@@ -39,6 +39,7 @@ class ProviderDescriptor:
     env_key: Optional[str] = None
     blurb: str = ""
     default_base_url: str = ""
+    auth: str = "key"  # "key" | "oauth" — "oauth" renders a Sign-in button
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -50,6 +51,8 @@ class ProviderDescriptor:
             "recommended_model": self.recommended_model,
             "env_key": self.env_key,
             "blurb": self.blurb,
+            "default_base_url": self.default_base_url,
+            "auth": self.auth,
         }
 
 
@@ -93,10 +96,13 @@ PROVIDERS: list[ProviderDescriptor] = [
         needs_key=True,
         fields=[
             _key_field("AnyRouter API key"),
-            _base_url_field("https://anyrouter.dev/api/v1"),
+            _base_url_field("https://anyrouter.dev/api"),
         ],
-        recommended_model="anthropic/claude-sonnet-4-6",
-        default_base_url="https://anyrouter.dev/api/v1",
+        recommended_model="anyrouter/cowork",
+        env_key="ANYROUTER_API_KEY",
+        # Anthropic-native root: the SDK appends `/v1/messages` itself.
+        default_base_url="https://anyrouter.dev/api",
+        auth="oauth",
         blurb="Free-tier models + multi-provider routing (CAS when Claude-compatible)",
     ),
     ProviderDescriptor(

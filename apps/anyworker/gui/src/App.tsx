@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   connectSessionWs,
   createSession,
@@ -15,6 +15,7 @@ import {
   type WireEvent,
 } from "./api";
 import { cn } from "./lib/utils";
+import { Settings } from "./views/Settings";
 
 type ChatItem =
   | { kind: "user"; text: string }
@@ -50,10 +51,13 @@ export function App() {
   const wsRef = useRef<ReturnType<typeof connectSessionWs> | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  const activeProvider = useMemo(
-    () => providers.find((p) => p.name === provider),
-    [providers, provider],
-  );
+  const onProviderChange = (name: string) => {
+    setProvider(name);
+    const p = providers.find((x) => x.name === name);
+    if (p?.recommended_model) setModel(p.recommended_model);
+    const baseField = p?.fields.find((f) => f.key === "base_url");
+    setBaseUrl(baseField?.default || "");
+  };
 
   const refreshSessions = useCallback(async (ws?: string) => {
     const list = await getSessions(ws || undefined);
@@ -316,62 +320,18 @@ export function App() {
 
       <main className="flex min-w-0 flex-1 flex-col">
         {showSettings ? (
-          <div className="flex-1 overflow-y-auto p-6">
-            <h1 className="mb-4 text-lg font-semibold">Model settings</h1>
-            <div className="max-w-md space-y-3">
-              <label className="block text-xs text-muted-foreground">Provider</label>
-              <select
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
-                value={provider}
-                onChange={(e) => {
-                  const name = e.target.value;
-                  setProvider(name);
-                  const p = providers.find((x) => x.name === name);
-                  if (p?.recommended_model) setModel(p.recommended_model);
-                  const baseField = p?.fields.find((f) => f.key === "base_url");
-                  setBaseUrl(baseField?.default || "");
-                }}
-              >
-                {providers.map((p) => (
-                  <option key={p.name} value={p.name}>
-                    {p.title} ({p.harness === "cas" ? "Full agent" : "Compat"})
-                  </option>
-                ))}
-              </select>
-              {activeProvider?.blurb ? (
-                <p className="text-xs text-muted-foreground">{activeProvider.blurb}</p>
-              ) : null}
-              <label className="block text-xs text-muted-foreground">Model</label>
-              <input
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                placeholder="model id"
-              />
-              <label className="block text-xs text-muted-foreground">API key</label>
-              <input
-                type="password"
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="leave blank to keep existing / env"
-              />
-              <label className="block text-xs text-muted-foreground">Base URL</label>
-              <input
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
-                value={baseUrl}
-                onChange={(e) => setBaseUrl(e.target.value)}
-                placeholder="optional"
-              />
-              <button
-                type="button"
-                onClick={onSaveSettings}
-                className="rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-foreground"
-              >
-                Save
-              </button>
-            </div>
-          </div>
+          <Settings
+            providers={providers}
+            provider={provider}
+            onProviderChange={onProviderChange}
+            model={model}
+            onModelChange={setModel}
+            apiKey={apiKey}
+            onApiKeyChange={setApiKey}
+            baseUrl={baseUrl}
+            onBaseUrlChange={setBaseUrl}
+            onSave={onSaveSettings}
+          />
         ) : (
           <>
             <header className="border-b border-border px-4 py-3">
