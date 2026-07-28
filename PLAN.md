@@ -26,28 +26,31 @@ coworker inspired by OpenWorker.
 
 - [x] `CasRunner` + `can_use_tool` approval bridge
 - [x] Wire events → GUI transcript
-- [ ] End-to-end smoke with real API key
-- [ ] Interrupt / stop turn polish
-- [ ] Session resume via CAS session id
+- [x] End-to-end smoke with real API key
+- [x] Interrupt / stop turn polish
+- [x] Session resume via CAS session id
+- [x] **CompatRunner** — thin OpenAI-compatible tool loop for Path B (openai, ollama, openai_compat)
+- [x] Local tools: ReadFile, ReadPdf, ReadXlsx, ReadCsv, ListFiles, Search, WriteFile, Bash
+- [x] Approval bridge for compat mode (WriteFile, Bash require approval)
 
-### Phase 3 — Multi-provider Path B `[ ]`
+### Phase 3 — Multi-provider Path B `[~]`
 
 - [x] Provider registry (Anthropic, AnyRouter, OpenAI, Ollama, generic)
 - [x] Secret store under app data dir
-- [ ] Thin OpenAI-compatible tool loop
+- [x] Thin OpenAI-compatible tool loop (CompatRunner)
 - [ ] Capability badge polish
 
 ### Phase 4 — UX polish `[ ]`
 
 - [ ] Onboarding wizard
 - [ ] Skills catalog surface
-- [ ] Artifacts panel
-- [ ] Deeper OpenWorker UI port (composer, markdown, right rail)
+- [x] Artifacts panel (right rail in GUI)
+- [x] Deeper OpenWorker UI port (three-pane shell: sessions · conversation · right rail)
 
 ### Phase 5 — Quality & packaging `[ ]`
 
 - [x] Basic pytest for health/sessions
-- [ ] GUI unit tests
+- [x] CompatRunner tests (20 tests: tools, error cases, mocked API, approval flow, interrupt)
 - [ ] macOS packaging
 
 ## Verify

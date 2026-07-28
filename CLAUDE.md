@@ -52,7 +52,7 @@ Static first. No external network at runtime. Unbuilt integrations use `status: 
 | Layer | Stack |
 |---|---|
 | Agent | **Claude Agent SDK** (`claude-agent-sdk`) — Path A |
-| Compat models | Thin OpenAI-compatible loop — Path B (registry live; loop stub) |
+| Compat models | Thin OpenAI-compatible loop (`CompatRunner`) — Path B (live) |
 | API | FastAPI on loopback `127.0.0.1:8765` |
 | UI | React 19 + Vite + Tailwind v4 (studio tokens) |
 | Shell | Tauri 2 (next) |

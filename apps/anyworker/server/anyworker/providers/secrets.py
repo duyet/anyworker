@@ -114,6 +114,12 @@ class SecretStore:
         desc = get_provider(provider_name)
         profile = self.get_provider_profile(provider_name)
         env: dict[str, str] = {}
+
+        # Apple Foundation Models: on-device, no API key needed.
+        if provider_name == "apple_foundation":
+            env["ANYWORKER_APPLE_FOUNDATION"] = "1"
+            return env
+
         key = self.resolve_api_key(
             provider_name, desc.env_key if desc else "ANTHROPIC_API_KEY"
         )

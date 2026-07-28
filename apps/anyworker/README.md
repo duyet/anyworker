@@ -4,7 +4,7 @@ Main AnyWorker product: local desktop coworker (MVP).
 
 | Path | Role |
 |---|---|
-| `server/` | Python FastAPI sidecar — Claude Agent SDK (Path A) + provider registry |
+| `server/` | Python FastAPI sidecar — Claude Agent SDK (Path A) + OpenAI-compatible loop (Path B) + provider registry |
 | `gui/` | React UI (Vite). Tauri shell comes next |
 
 ## Dev

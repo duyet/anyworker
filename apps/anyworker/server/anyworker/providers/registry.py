@@ -106,6 +106,17 @@ PROVIDERS: list[ProviderDescriptor] = [
         blurb="Free-tier models + multi-provider routing (CAS when Claude-compatible)",
     ),
     ProviderDescriptor(
+        name="apple_foundation",
+        title="Apple Foundation Models",
+        harness="cas",
+        needs_key=False,
+        fields=[],
+        recommended_model="",
+        env_key=None,
+        blurb="On-device Foundation Models via Apple Intelligence (macOS 18+)",
+        default_base_url="",
+    ),
+    ProviderDescriptor(
         name="openai",
         title="OpenAI",
         harness="compat",

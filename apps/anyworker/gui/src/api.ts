@@ -215,6 +215,17 @@ export async function deleteSession(sessionId: string): Promise<void> {
   await fetch(`${httpBase()}/v1/sessions/${sessionId}`, { method: "DELETE" });
 }
 
+export async function resolveApproval(
+  sessionId: string,
+  approvalId: string,
+  outcome: "once" | "always_tool" | "deny",
+): Promise<void> {
+  await req(`/v1/sessions/${sessionId}/approvals/${encodeURIComponent(approvalId)}`, {
+    method: "POST",
+    body: JSON.stringify({ outcome }),
+  });
+}
+
 /** Throws on a non-2xx reply so callers can render one failed section only. */
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${httpBase()}${path}`, {

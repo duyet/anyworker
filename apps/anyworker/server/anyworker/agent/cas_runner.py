@@ -71,7 +71,7 @@ class CasRunner:
                 return PermissionResultAllow(updated_input=input_data)
 
             # Auto-allow read-only tools so the loop stays snappy.
-            if tool_name in {"Read", "Glob", "Grep", "WebSearch", "WebFetch"}:
+            if tool_name in {"Read", "Glob", "Grep", "WebSearch", "WebFetch", "ReadFile", "ReadPdf", "ReadXlsx", "ReadCsv"}:
                 return PermissionResultAllow(updated_input=input_data)
 
             if self.approver is None:
@@ -119,12 +119,12 @@ class CasRunner:
             payload={},
         )
 
-        # Read tools auto-approved; writes/bash go through can_use_tool.
+        # Read tools + file-reading tools auto-approved; writes/bash go through can_use_tool.
         options = ClaudeAgentOptions(
             cwd=self.workspace,
             model=self.model,
             system_prompt=ANYWORKER_COWORK_PROMPT,
-            allowed_tools=["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
+            allowed_tools=["Read", "Glob", "Grep", "WebSearch", "WebFetch", "ReadFile", "ReadPdf", "ReadXlsx", "ReadCsv"],
             permission_mode="default",
             can_use_tool=self._permission_handler(),
             env=self.env,

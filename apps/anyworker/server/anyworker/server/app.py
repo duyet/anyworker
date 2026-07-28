@@ -18,6 +18,9 @@ from anyworker.server.routes import (
     build_auth_router,
     build_byok_router,
     build_catalog_router,
+    build_github_router,
+    build_plugin_router,
+    build_testing_router,
 )
 
 log = logging.getLogger(__name__)
@@ -80,7 +83,10 @@ def create_app(manager: SessionManager) -> FastAPI:
 
     app.include_router(build_auth_router(manager))
     app.include_router(build_catalog_router(manager))
+    app.include_router(build_plugin_router(manager))
+    app.include_router(build_github_router(manager))
     app.include_router(build_byok_router(manager))
+    app.include_router(build_testing_router(manager))
 
     @app.get("/v1/health")
     async def health() -> dict[str, Any]:

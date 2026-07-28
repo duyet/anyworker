@@ -7,7 +7,7 @@ Open alternative to Claude Cowork / OpenWorker — AI that does the work.
 | App | Path | What |
 |---|---|---|
 | Marketing site | `apps/web` | anyworker.dev (TanStack Start → Cloudflare Workers) |
-| Product | `apps/anyworker` | Local agent (Python + Claude Agent SDK) + React GUI |
+| Product | `apps/anyworker` | Local agent (Python + Claude Agent SDK + OpenAI-compatible loop) + React GUI |
 
 ## Commands
 

@@ -31,3 +31,8 @@ apps/anyworker/server/.pytest_cache
 dist/
 apps/*/dist/
 apps/anyworker/gui/dist/
+
+# local tooling
+.commandcode/
+.omo/
+.playwright-mcp/

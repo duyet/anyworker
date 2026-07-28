@@ -42,7 +42,7 @@ export function FeatureRelay() {
   const composerId = useId()
   const [reduceMotion, setReduceMotion] = useState(false)
 
-  const scene = scenes[index]!
+  const scene = scenes[index]
   const sceneId = scene.id
 
   const go = useCallback(
@@ -80,7 +80,7 @@ export function FeatureRelay() {
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
           setPaused(false)
         }
       }}
@@ -381,9 +381,7 @@ function SessionCenter({
         <ol className="mx-auto flex w-full max-w-md flex-col gap-2">
           {task.steps.map((step) => {
             const waiting = step.state === "waiting" && phase === "waiting"
-            const done =
-              step.state === "done" ||
-              (step.state === "waiting" && phase !== "waiting")
+            const done = step.state !== "waiting" || phase !== "waiting"
             return (
               <li
                 key={step.label}
@@ -657,9 +655,7 @@ function RightRail({
         <ul className="mt-3 flex flex-col gap-1.5">
           {s.task.steps.map((step) => {
             const waiting = step.state === "waiting" && phase === "waiting"
-            const done =
-              step.state === "done" ||
-              (step.state === "waiting" && phase !== "waiting")
+            const done = step.state !== "waiting" || phase !== "waiting"
             return (
               <li
                 key={step.label}

@@ -1,28 +1,73 @@
 import { cn } from "@/lib/utils"
 
 /**
- * The AnyWorker "A/" mark.
+ * The AnyWorker brand mark — "A/" monogram.
  *
- * Sibling to the AnyRouter "AR" mark: the same A, verbatim, followed by a
- * slash built on the A's own left-leg slope and stroke width, so both
- * diagonals match by construction.
+ * The A is a clean geometric letterform (7-unit legs, 4-unit crossbar). The
+ * slash branches from the right leg's outer edge near the top and runs parallel
+ * to it (same slope), like a splinter off the stroke.
  *
- * Square viewBox so it drops into the square icon slots callers already use.
- * Keep this in sync with public/brand/anyworker-logo*.svg.
+ * Right-leg outer edge: (21,4)→(27,28), dx/dy = 6/24 = 1/4.
+ * At y=8 (4 below apex) the edge x = 21 + 4/4 = 22.
+ * Slash starts at (22,8) and follows the same diagonal.
  */
-export function AnyWorkerMark({ className }: { className?: string }) {
+
+export function AnyWorkerMark({
+  className,
+  colored,
+}: {
+  className?: string
+  colored?: boolean
+}) {
+  const c = colored ? "#c8f542" : "currentColor"
   return (
     <svg
-      viewBox="114.58 -38.14 1291.67 1291.67"
+      viewBox="0 0 32 32"
       className={cn("size-6", className)}
-      fill="currentColor"
+      fill="none"
       role="img"
       aria-label="AnyWorker"
     >
-      <g transform="translate(0,1254) scale(0.1,-0.1)">
-        <path d="M5208 9108 c-102 -165 -346 -575 -781 -1313 -671 -1138 -1030 -1742 -1457 -2455 -320 -533 -914 -1530 -928 -1556 -11 -21 -9 -22 41 -26 28 -3 111 -4 182 -3 72 0 279 2 460 3 l330 2 86 143 c80 131 240 395 754 1237 191 314 496 820 1053 1745 145 242 275 461 288 488 13 26 28 47 33 47 10 0 286 -441 973 -1550 233 -377 624 -1006 868 -1397 l445 -712 543 -3 c298 -2 542 -2 542 0 0 2 -93 150 -206 330 -325 515 -1256 2003 -1484 2372 -114 184 -319 517 -457 740 -557 902 -1209 1948 -1228 1968 -10 11 -21 -1 -57 -60z" />
-        <path d="M8890.0 3754.6L9935.0 3754.6L13171.7 9171.6L12126.7 9171.6Z" />
-      </g>
+      {/* A — left leg, right leg, crossbar */}
+      <path
+        d="M7 28 L13 4 L21 4 L27 28 L23 28 L21 22 L13 22 L11 28 Z"
+        fill={c}
+      />
+      {/* A crossbar */}
+      <path d="M14 18 L20 18 L19 14 L15 14 Z" fill={c} />
+      {/* Slash — parallel to right leg, branching from outer edge at y=8 */}
+      <polygon points="22,8 22.7,8 24.7,16 24,16" fill={c} />
     </svg>
+  )
+}
+
+/**
+ * Full logotype: icon mark + "AnyWorker" wordmark.
+ */
+export function AnyWorkerLogo({
+  className,
+  colored,
+  size = "sm",
+}: {
+  className?: string
+  colored?: boolean
+  size?: "sm" | "md" | "lg"
+}) {
+  const iconSize = size === "lg" ? "size-8" : size === "md" ? "size-7" : "size-5"
+  const textSize =
+    size === "lg" ? "text-lg" : size === "md" ? "text-base" : "text-sm"
+  return (
+    <span className={cn("inline-flex items-center gap-2", className)}>
+      <AnyWorkerMark className={iconSize} colored={colored} />
+      <span
+        className={cn(
+          "font-semibold tracking-tight",
+          textSize,
+          colored ? "text-brand" : "text-foreground",
+        )}
+      >
+        AnyWorker
+      </span>
+    </span>
   )
 }

@@ -9,9 +9,10 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Awaitable, Optional
 
 from anyworker.agent.cas_runner import CasRunner
+from anyworker.agent.compat_runner import CompatRunner
 from anyworker.agent.events import Event, EventType
 from anyworker.config import state_dir
 from anyworker.providers.registry import get_provider
@@ -180,38 +181,8 @@ class SessionManager:
         fut.set_result(outcome)
         return True
 
-    async def run_user_turn(self, session_id: str, text: str) -> None:
-        session = self.sessions.get(session_id)
-        if not session:
-            return
-
-        session.messages.append({"role": "user", "content": text})
-        if session.title in {"New session", "Untitled"} and text.strip():
-            session.title = text.strip()[:60]
-
-        if session.harness != "cas":
-            await self._broadcast(
-                session,
-                Event(
-                    type=EventType.ERROR,
-                    session_id=session.id,
-                    payload={
-                        "message": (
-                            f"Provider '{session.provider}' runs in compat mode, "
-                            "which is not wired yet. Switch to Anthropic or AnyRouter."
-                        )
-                    },
-                ),
-            )
-            await self._broadcast(
-                session,
-                Event(
-                    type=EventType.TURN_END,
-                    session_id=session.id,
-                    payload={"subtype": "error"},
-                ),
-            )
-            return
+    async def _make_approver(self, session: Session) -> Callable[[dict[str, Any]], Awaitable[str]]:
+        """Build an approver callback that broadcasts permission requests."""
 
         async def approver(request: dict[str, Any]) -> str:
             approval_id = request["id"]
@@ -233,14 +204,48 @@ class SessionManager:
             finally:
                 session.pending_approvals.pop(approval_id, None)
 
-        env = self.secrets.cas_env(session.provider)
-        runner = CasRunner(
-            session_id=session.id,
-            workspace=session.workspace,
-            model=session.model or None,
-            env=env,
-            approver=approver,
-        )
+        return approver
+
+    async def run_user_turn(self, session_id: str, text: str) -> None:
+        session = self.sessions.get(session_id)
+        if not session:
+            return
+
+        session.messages.append({"role": "user", "content": text})
+        if session.title in {"New session", "Untitled"} and text.strip():
+            session.title = text.strip()[:60]
+
+        approver = await self._make_approver(session)
+
+        if session.harness == "cas":
+            env = self.secrets.cas_env(session.provider)
+            runner: CasRunner | CompatRunner = CasRunner(
+                session_id=session.id,
+                workspace=session.workspace,
+                model=session.model or None,
+                env=env,
+                approver=approver,
+            )
+        else:
+            # Path B — thin OpenAI-compatible tool loop.
+            desc = get_provider(session.provider)
+            profile = self.secrets.get_provider_profile(session.provider)
+            api_key = self.secrets.resolve_api_key(
+                session.provider, desc.env_key if desc else ""
+            )
+            base_url = (profile.get("base_url") or "").strip()
+            if not base_url and desc and desc.default_base_url:
+                base_url = desc.default_base_url
+            if not base_url and session.provider == "openai":
+                base_url = "https://api.openai.com/v1"
+            runner = CompatRunner(
+                session_id=session.id,
+                workspace=session.workspace,
+                model=session.model or None,
+                api_key=api_key,
+                base_url=base_url,
+                approver=approver,
+            )
         session.runner = runner
 
         assistant_bits: list[str] = []

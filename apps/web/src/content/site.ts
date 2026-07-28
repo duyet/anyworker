@@ -58,38 +58,38 @@ export const hero = {
  * Each scene is interactive UI — not a screenshot carousel.
  */
 export const heroRelay = {
-  intervalMs: 7000,
+  intervalMs: 8000,
   stageAlt: "Oil painting landscape behind the product demo",
   scenes: [
     {
       id: "session",
-      label: "Session",
+      label: "Local RAG",
       stage: "peaks" as const,
-      caption: "A full coworker app — sessions, progress, and approvals.",
+      caption: "Index local PDFs, spreadsheets, and code — ask questions without data leaving your machine.",
     },
     {
       id: "checkin",
-      label: "Approval",
+      label: "Banking",
       stage: "peaks" as const,
-      caption: "It waits before sending, publishing, or deleting.",
+      caption: "Analyze financial statements, detect fraud patterns, and generate compliance reports.",
     },
     {
       id: "home",
       label: "Home",
       stage: "coast" as const,
-      caption: "Start from a greeting, or pick up an active job.",
+      caption: "Start from a greeting, pick a use case template, or continue an active job.",
     },
     {
       id: "access",
-      label: "Access",
+      label: "Skills",
       stage: "coast" as const,
-      caption: "Browser, files, and tools — only what you grant.",
+      caption: "Install skills from git repositories — file readers, PDF analyzers, web scrapers.",
     },
     {
       id: "automations",
-      label: "Schedule",
+      label: "Tests",
       stage: "peaks" as const,
-      caption: "Hand off recurring work. It keeps going unattended.",
+      caption: "Define prompt test suites and run evaluations across models automatically.",
     },
   ],
 } as const
@@ -112,70 +112,71 @@ export const heroStudio = {
   statusEdit: "Editing",
   sidebar: {
     sessions: [
-      { name: "Board update — Q3", state: "running" as const },
-      { name: "Weekly marketing report", state: "scheduled" as const },
-      { name: "Inbox triage", state: "done" as const },
+      { name: "Local RAG — codebase", state: "running" as const },
+      { name: "Banking Q3 analysis", state: "scheduled" as const },
+      { name: "Deep research: AGI", state: "done" as const },
     ],
   },
   task: {
-    title: "Board update — Q3",
-    prompt: "Pull the Q3 numbers and send the board update.",
+    title: "Local RAG — codebase",
+    prompt: "Index the AnyWorker codebase and answer questions about it",
     steps: [
       {
         label: "Read",
-        detail: "Q3-forecast.xlsx",
-        tool: "Drive",
+        detail: "47 source files scanned",
+        tool: "Glob",
         state: "done" as const,
       },
       {
-        label: "Checked",
-        detail: "3 figures against last month",
+        label: "Extracted",
+        detail: "PDF, xlsx, csv, txt content",
+        tool: "ReadFile",
+        state: "done" as const,
+      },
+      {
+        label: "Indexed",
+        detail: "Built local vector index",
         tool: "",
         state: "done" as const,
       },
       {
-        label: "Drafted",
-        detail: "board-update.docx",
-        tool: "Docs",
-        state: "done" as const,
-      },
-      {
         label: "Waiting",
-        detail: "Send to #exec",
-        tool: "Slack",
+        detail: "Grep for patterns in indexed files",
+        tool: "Grep",
         state: "waiting" as const,
       },
     ],
-    approveLabel: "Approve & send",
-    editLabel: "Edit first",
+    approveLabel: "Approve & run",
+    editLabel: "Edit query",
   },
   approval: {
     title: "Approval required",
-    body: "Send a message in Slack · #exec. Review the draft, then allow once or edit.",
+    body: "Run a search over your indexed codebase. Review the query, then allow once or always.",
     draftPreview:
-      "Q3 board update ready — three figures checked against last month.",
-    sent: "Message queued for #exec.",
-    editNote: "Draft opened for edit. Nothing was sent.",
+      "Search for WebSocket event handling and session management patterns in the codebase.",
+    sent: "Search queued. Results will appear in the transcript.",
+    editNote: "Query opened for edit.",
   },
   progress: {
     title: "Progress",
-    body: "For longer multi-step tasks, progress appears here while AnyWorker plans, uses tools, waits for approval, and produces artifacts.",
+    body: "For longer RAG and analysis workflows, progress appears here while AnyWorker reads files, builds indexes, and searches for relevant content.",
   },
   artifacts: {
     title: "Artifacts",
-    empty: "No previewable files yet.",
+    empty: "No files produced yet.",
     items: [
-      { name: "board-update.docx", kind: "Docs" },
-      { name: "Q3-figures.csv", kind: "Sheet" },
+      { name: "codebase-index.json", kind: "Index" },
+      { name: "rag-summary.md", kind: "Report" },
     ],
   },
   access: {
     title: "Access",
     items: [
-      { name: "Browser", detail: "Allowed" },
-      { name: "GitHub", detail: "1 folder" },
-      { name: "Google Drive", detail: "Q3 folder" },
-      { name: "Slack", detail: "#exec" },
+      { name: "Files", detail: "txt, pdf, csv, xlsx" },
+      { name: "Search", detail: "ripgrep, glob" },
+      { name: "Plugins", detail: "git install" },
+      { name: "GitHub", detail: "PRs, issues, repos" },
+      { name: "Web", detail: "search + fetch" },
     ],
   },
   composer: {
@@ -184,14 +185,14 @@ export const heroStudio = {
     modelPicker: "AnyRouter · free",
   },
   home: {
-    greeting: "Hello",
-    greetingSub: "What should we finish today?",
-    helper: "How can I help you today?",
-    activeLabel: "Active",
+    greeting: "What should we work on today?",
+    greetingSub: "Pick a use case or type what you need.",
+    helper: "Local RAG · Banking analysis · Deep research · Prompt testing",
+    activeLabel: "Use cases",
     active: [
-      { name: "Board update — Q3", when: "Running now" },
-      { name: "Weekly marketing report", when: "Every Monday · 8:00" },
-      { name: "Inbox triage", when: "2 days ago" },
+      { name: "Local RAG — codebase", when: "Running now" },
+      { name: "Banking Q3 analysis", when: "Every Monday · 8:00" },
+      { name: "Deep research: AGI timeline", when: "Yesterday · done" },
     ],
   },
   automationsPanel: {
@@ -294,79 +295,156 @@ export const howItWorks = {
   ],
 } as const
 
+export type UseCaseId = "rag" | "banking" | "research" | "testing"
+
+export interface UseCaseStep {
+  label: string
+  detail: string
+  tool: string
+}
+
+export interface UseCaseDef {
+  id: UseCaseId
+  icon: string
+  title: string
+  badge: string
+  prompt: string
+  appTitle: string
+  appModel: string
+  steps: UseCaseStep[]
+  sidebarSessions: Array<{ name: string; state: string }>
+  progressBody: string
+  artifacts: Array<{ name: string; kind: string }>
+  accessItems: Array<{ name: string; detail: string }>
+}
+
+export const USE_CASES: UseCaseDef[] = [
+  {
+    id: "rag",
+    icon: "FileSearch",
+    title: "Local RAG",
+    badge: "Files",
+    prompt: "Index the AnyWorker codebase and answer questions about it.",
+    appTitle: "Local RAG — codebase",
+    appModel: "AnyRouter · free",
+    steps: [
+      { label: "Read", detail: "47 source files scanned", tool: "Glob" },
+      { label: "Extracted", detail: "PDF, xlsx, csv, txt content", tool: "ReadFile" },
+      { label: "Search", detail: "Patterns across indexed files", tool: "Grep" },
+      { label: "Waiting", detail: "Approve to query the index", tool: "" },
+    ],
+    sidebarSessions: [
+      { name: "Local RAG — codebase", state: "running" },
+      { name: "Banking Q3 analysis", state: "scheduled" },
+      { name: "Deep research: AGI", state: "done" },
+    ],
+    progressBody: "Reading and indexing local files. No data leaves your machine.",
+    artifacts: [
+      { name: "codebase-index.json", kind: "Index" },
+      { name: "rag-summary.md", kind: "Report" },
+    ],
+    accessItems: [
+      { name: "Files", detail: "txt, pdf, csv, xlsx" },
+      { name: "Search", detail: "ripgrep, glob" },
+      { name: "Web", detail: "search + fetch" },
+    ],
+  },
+  {
+    id: "banking",
+    icon: "Landmark",
+    title: "Banking Analysis",
+    badge: "Finance",
+    prompt: "Analyze Q3 financial statements for fraud and compliance risks.",
+    appTitle: "Banking Q3 analysis",
+    appModel: "AnyRouter · free",
+    steps: [
+      { label: "Read", detail: "Q3-financials.xlsx, 12 sheets", tool: "ReadXlsx" },
+      { label: "Checked", detail: "6 anomaly flags found", tool: "Grep" },
+      { label: "Drafted", detail: "compliance-report.md", tool: "" },
+      { label: "Waiting", detail: "Approve to file the report", tool: "" },
+    ],
+    sidebarSessions: [
+      { name: "Banking Q3 analysis", state: "running" },
+      { name: "Fraud pattern scan", state: "scheduled" },
+      { name: "Local RAG — codebase", state: "done" },
+    ],
+    progressBody: "Scanning financial statements for anomalies, risk patterns, and compliance gaps.",
+    artifacts: [
+      { name: "compliance-report.md", kind: "Report" },
+      { name: "anomalies.csv", kind: "Sheet" },
+    ],
+    accessItems: [
+      { name: "Files", detail: "xlsx, csv, pdf" },
+      { name: "Web", detail: "regulatory lookup" },
+    ],
+  },
+  {
+    id: "research",
+    icon: "Search",
+    title: "Deep Research",
+    badge: "Web",
+    prompt: "Research AGI timelines — search, read sources, synthesize findings.",
+    appTitle: "Deep research: AGI",
+    appModel: "AnyRouter · free",
+    steps: [
+      { label: "Search", detail: "Web search — 8 sources", tool: "WebSearch" },
+      { label: "Read", detail: "3 papers, 2 reports, 1 blog", tool: "ReadFile" },
+      { label: "Synthesized", detail: "Research report draft", tool: "" },
+      { label: "Waiting", detail: "Approve to publish report", tool: "" },
+    ],
+    sidebarSessions: [
+      { name: "Deep research: AGI", state: "running" },
+      { name: "Local RAG — codebase", state: "done" },
+      { name: "Banking Q3 analysis", state: "scheduled" },
+    ],
+    progressBody: "Searching the web, reading papers, and synthesizing findings into a research report.",
+    artifacts: [
+      { name: "research-report.md", kind: "Report" },
+      { name: "sources.json", kind: "Data" },
+    ],
+    accessItems: [
+      { name: "Web", detail: "search + fetch" },
+      { name: "Files", detail: "pdf, txt, md" },
+    ],
+  },
+  {
+    id: "testing",
+    icon: "FlaskConical",
+    title: "Prompt Testing",
+    badge: "Dev",
+    prompt: "Run the prompt test suite across models and report pass/fail rates.",
+    appTitle: "Prompt test suite",
+    appModel: "AnyRouter · free",
+    steps: [
+      { label: "Loaded", detail: "12 test cases", tool: "" },
+      { label: "Running", detail: "Batch eval across 3 models", tool: "" },
+      { label: "Scored", detail: "avg 0.87 across all tests", tool: "" },
+      { label: "Waiting", detail: "View full test report", tool: "" },
+    ],
+    sidebarSessions: [
+      { name: "Prompt test suite", state: "running" },
+      { name: "Deep research: AGI", state: "scheduled" },
+      { name: "Local RAG — codebase", state: "done" },
+    ],
+    progressBody: "Running 12 test cases across 3 models. Each test checks expected outputs with contains/regex/llm_judge modes.",
+    artifacts: [
+      { name: "test-report.json", kind: "Data" },
+      { name: "regression-chart.svg", kind: "Chart" },
+    ],
+    accessItems: [
+      { name: "Files", detail: "test definitions" },
+      { name: "API", detail: "LLM providers" },
+    ],
+  },
+]
+
 export const skills = {
   eyebrow: "Out of the box",
   headline: [
     { text: "Ready for real work,", accent: false },
     { text: "not just chat.", accent: true },
   ],
-  body: "AnyWorker ships ready for common kinds of work, with the right tools, working style and check-ins already set up. Pick a skill and hand off a task — no configuration, no prompt engineering.",
-  items: [
-    {
-      icon: "Megaphone",
-      title: "Marketing",
-      body: "Tracks what's working — spend, attribution and the Monday report — without opening five dashboards.",
-      worksWith: "Analytics · Slack · Docs",
-      checksIn: "before anything is published",
-    },
-    {
-      icon: "TrendingUp",
-      title: "Sales",
-      body: "Researches accounts, preps every meeting, and drafts follow-ups that sound like you rather than like a template.",
-      worksWith: "CRM · Email · Calendar",
-      checksIn: "before anything is sent",
-    },
-    {
-      icon: "Scale",
-      title: "Legal",
-      body: "Reads the contract, flags the clauses that changed, and summarises the risk in language the rest of the team can act on.",
-      worksWith: "Files · Email · Docs",
-      checksIn: "before any position is shared",
-    },
-    {
-      icon: "CalendarCheck",
-      title: "Executive assistant",
-      body: "Owns the calendar, triages the inbox, and keeps the day on rails so you only see what actually needs you.",
-      worksWith: "Email · Calendar · Slack",
-      checksIn: "before replying or moving meetings",
-    },
-    {
-      icon: "Siren",
-      title: "Ops on-call",
-      body: "Triages the alert, digs through the runbook, and drafts the incident notes nobody wants to write at 3am.",
-      worksWith: "Slack · Files · GitHub",
-      checksIn: "before touching anything live",
-    },
-    {
-      icon: "Receipt",
-      title: "Finance",
-      body: "Reconciles the sheet, chases the missing receipts, and builds the month-end pack from the numbers you already have.",
-      worksWith: "Sheets · Email · Drive",
-      checksIn: "before any figure goes out",
-    },
-  ],
-  trigger: {
-    eyebrow: "Works in the background",
-    title: "Starts when work happens.",
-    body: "Set a trigger once. AnyWorker starts the task on its own and checks in before important actions.",
-    items: [
-      {
-        label: "Slack mention",
-        title: "Triage the alert",
-        body: "Check the runbook and draft an in-thread response.",
-      },
-      {
-        label: "Incoming email",
-        title: "Prepare the reply",
-        body: "Gather the answers and hold the draft for review.",
-      },
-      {
-        label: "Your schedule",
-        title: "Deliver the report",
-        body: "Pull the numbers and finish it before standup.",
-      },
-    ],
-  },
+  body: "Pick a use case below and watch AnyWorker work through it. Each workflow runs locally with tools you control — no configuration needed.",
 } as const
 
 export const connections = {
