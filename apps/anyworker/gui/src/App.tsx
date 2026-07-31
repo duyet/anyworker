@@ -57,6 +57,7 @@ export function App() {
             model={settings.model}
             items={stream.items}
             busy={stream.busy}
+            connectionState={stream.connectionState}
             showTemplates={session.showTemplates}
             onHideTemplates={session.hideTemplates}
             onSend={stream.sendUserMessage}

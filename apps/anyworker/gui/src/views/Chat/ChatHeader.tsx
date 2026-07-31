@@ -1,5 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { MessageSquare, PanelRight } from "lucide-react";
+import type { ConnectionState } from "@/hooks/useSessionStream";
+
+const CONNECTION_LABEL: Record<ConnectionState, string> = {
+  connected: "Connected",
+  reconnecting: "Reconnecting…",
+  offline: "Offline",
+};
+
+function ConnectionBadge({ state }: { state: ConnectionState }) {
+  if (state === "connected") return null;
+  return (
+    <span
+      className="flex items-center gap-1.5 text-[11px] text-muted-foreground"
+      role="status"
+    >
+      <span
+        className={`size-1.5 rounded-full ${
+          state === "reconnecting" ? "bg-amber-500 animate-pulse" : "bg-muted-foreground"
+        }`}
+      />
+      {CONNECTION_LABEL[state]}
+    </span>
+  );
+}
 
 export function ChatHeader({
   chatTitle,
@@ -8,6 +32,7 @@ export function ChatHeader({
   provider,
   model,
   busy,
+  connectionState,
   onInterrupt,
   showRightRail,
   onToggleRightRail,
@@ -18,6 +43,7 @@ export function ChatHeader({
   provider: string;
   model: string;
   busy: boolean;
+  connectionState?: ConnectionState;
   onInterrupt: () => void;
   showRightRail: boolean;
   onToggleRightRail: () => void;
@@ -36,6 +62,7 @@ export function ChatHeader({
         </div>
       </div>
       <div className="flex gap-2 items-center">
+        {connectionState && <ConnectionBadge state={connectionState} />}
         {busy && (
           <Button
             variant="ghost"

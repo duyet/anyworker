@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type { ChatItem, UseCaseTemplate } from "@/types";
+import type { ConnectionState } from "@/hooks/useSessionStream";
 import { ChatHeader } from "./ChatHeader";
 import { Transcript } from "./Transcript";
 import { Composer } from "./Composer";
@@ -12,6 +13,7 @@ export function Chat({
   model,
   items,
   busy,
+  connectionState,
   showTemplates,
   onHideTemplates,
   onSend,
@@ -27,6 +29,7 @@ export function Chat({
   model: string;
   items: ChatItem[];
   busy: boolean;
+  connectionState: ConnectionState;
   showTemplates: boolean;
   onHideTemplates: () => void;
   onSend: (text: string) => void;
@@ -66,6 +69,7 @@ export function Chat({
         provider={provider}
         model={model}
         busy={busy}
+        connectionState={connectionState}
         onInterrupt={onInterrupt}
         showRightRail={showRightRail}
         onToggleRightRail={onToggleRightRail}
