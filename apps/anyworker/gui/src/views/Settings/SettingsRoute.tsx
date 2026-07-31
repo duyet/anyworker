@@ -20,9 +20,11 @@ export function SettingsRoute({
       onApiKeyChange={settings.setApiKey}
       baseUrl={settings.baseUrl}
       onBaseUrlChange={settings.setBaseUrl}
-      onSave={() => {
-        onDone();
-        void settings.save();
+      saveStatus={settings.saveStatus}
+      saveError={settings.saveError}
+      onSave={async () => {
+        const ok = await settings.save();
+        if (ok) onDone();
       }}
     />
   );

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { ModelCatalog, ModelInfo, Provider, TopModel } from "../../api";
+import type { SaveStatus } from "../../hooks/useSettings";
 import { cn } from "../../lib/utils";
 
 const FALLBACK_RECOMMENDED = ["anyrouter/cowork", "anyrouter/free"];
@@ -60,6 +61,8 @@ export function ModelSettings({
   catalog,
   catalogError,
   catalogLoading,
+  saveStatus,
+  saveError,
   onSave,
 }: {
   providers: Provider[];
@@ -74,6 +77,8 @@ export function ModelSettings({
   catalog: ModelCatalog | null;
   catalogError: string | null;
   catalogLoading: boolean;
+  saveStatus: SaveStatus;
+  saveError: string | null;
   onSave: () => void;
 }) {
   const [query, setQuery] = useState("");
@@ -223,13 +228,24 @@ export function ModelSettings({
         placeholder="optional"
       />
 
-      <button
-        type="button"
-        onClick={onSave}
-        className="rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-foreground"
-      >
-        Save
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={saveStatus === "saving"}
+          className="rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-foreground disabled:opacity-60"
+        >
+          {saveStatus === "saving" ? "Saving…" : "Save"}
+        </button>
+        {saveStatus === "saved" ? (
+          <span className="text-xs text-muted-foreground">Saved.</span>
+        ) : null}
+      </div>
+      {saveStatus === "error" ? (
+        <div className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-danger">
+          {saveError || "Could not save your settings. Try again."}
+        </div>
+      ) : null}
     </div>
   );
 }

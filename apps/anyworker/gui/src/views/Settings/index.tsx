@@ -6,6 +6,7 @@ import {
   type ModelCatalog,
   type Provider,
 } from "../../api";
+import type { SaveStatus } from "../../hooks/useSettings";
 import { cn } from "../../lib/utils";
 import { Account } from "./Account";
 import { Byok } from "./Byok";
@@ -29,6 +30,8 @@ export function Settings({
   onApiKeyChange,
   baseUrl,
   onBaseUrlChange,
+  saveStatus,
+  saveError,
   onSave,
 }: {
   providers: Provider[];
@@ -40,6 +43,8 @@ export function Settings({
   onApiKeyChange: (v: string) => void;
   baseUrl: string;
   onBaseUrlChange: (v: string) => void;
+  saveStatus: SaveStatus;
+  saveError: string | null;
   onSave: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("account");
@@ -140,6 +145,8 @@ export function Settings({
           catalog={catalog}
           catalogError={catalogError}
           catalogLoading={catalogLoading}
+          saveStatus={saveStatus}
+          saveError={saveError}
           onSave={onSave}
         />
       ) : null}

@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { getProviders, getSettings, setActive, type Provider } from "../api";
+import {
+  getProviders,
+  getSettings,
+  setActive,
+  setProviderProfile,
+  type Provider,
+} from "../api";
+
+export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 /** Provider, model, credentials and workspace for the active profile. */
 export function useSettings() {
@@ -10,6 +18,8 @@ export function useSettings() {
   const [baseUrl, setBaseUrl] = useState("");
   const [workspace, setWorkspace] = useState("");
   const [workspaceInput, setWorkspaceInput] = useState("");
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     getProviders()
@@ -46,14 +56,31 @@ export function useSettings() {
     [],
   );
 
-  const save = useCallback(async () => {
-    setApiKey("");
+  /** Persists provider/model/credentials. Returns true on success. */
+  const save = useCallback(async (): Promise<boolean> => {
+    setSaveStatus("saving");
+    setSaveError(null);
     try {
+      // Only touch the stored credentials when the user actually typed
+      // something — blank fields mean "keep what's already saved".
+      if (apiKey.trim() || baseUrl.trim()) {
+        await setProviderProfile(provider, {
+          api_key: apiKey.trim(),
+          base_url: baseUrl.trim(),
+        });
+      }
       await setActive({ provider, model, workspace: workspace || workspaceInput });
-    } catch {
-      /* ignore */
+      setApiKey("");
+      setSaveStatus("saved");
+      return true;
+    } catch (e) {
+      setSaveStatus("error");
+      setSaveError(
+        e instanceof Error ? e.message : "Could not save your settings.",
+      );
+      return false;
     }
-  }, [provider, model, workspace, workspaceInput]);
+  }, [provider, model, workspace, workspaceInput, apiKey, baseUrl]);
 
   return {
     providers,
@@ -71,6 +98,8 @@ export function useSettings() {
     setWorkspaceInput,
     adoptSession,
     save,
+    saveStatus,
+    saveError,
   };
 }
 
