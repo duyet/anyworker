@@ -58,6 +58,7 @@ export function Sidebar({
       <nav className="space-y-0.5 border-b border-border p-1.5">
         {[
           { key: "chat" as const, label: "Chat", Icon: MessageSquare },
+          { key: "history" as const, label: "History", Icon: History },
           { key: "plugins" as const, label: "Skills & plugins", Icon: Puzzle },
         ].map(({ key, label, Icon }) => (
           <button

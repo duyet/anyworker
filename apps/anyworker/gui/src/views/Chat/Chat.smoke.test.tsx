@@ -21,6 +21,7 @@ describe("Chat view smoke test", () => {
         onHideTemplates={() => {}}
         onSend={vi.fn()}
         onInterrupt={vi.fn()}
+        onOpenHistory={vi.fn()}
         onApprove={vi.fn()}
         showRightRail={false}
         onToggleRightRail={() => {}}

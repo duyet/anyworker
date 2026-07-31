@@ -34,6 +34,7 @@ export function ChatHeader({
   busy,
   connectionState,
   onInterrupt,
+  onOpenHistory,
   showRightRail,
   onToggleRightRail,
 }: {
@@ -45,6 +46,7 @@ export function ChatHeader({
   busy: boolean;
   connectionState?: ConnectionState;
   onInterrupt: () => void;
+  onOpenHistory: () => void;
   showRightRail: boolean;
   onToggleRightRail: () => void;
 }) {
@@ -71,6 +73,16 @@ export function ChatHeader({
             onClick={onInterrupt}
           >
             Stop
+          </Button>
+        )}
+        {sessionId && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-[11px] h-7"
+            onClick={onOpenHistory}
+          >
+            See what it did
           </Button>
         )}
         <Button

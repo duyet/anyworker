@@ -18,6 +18,7 @@ export function Chat({
   onHideTemplates,
   onSend,
   onInterrupt,
+  onOpenHistory,
   onApprove,
   showRightRail,
   onToggleRightRail,
@@ -34,6 +35,7 @@ export function Chat({
   onHideTemplates: () => void;
   onSend: (text: string) => void;
   onInterrupt: () => void;
+  onOpenHistory: () => void;
   onApprove: (approvalId: string, outcome: "once" | "always_tool" | "deny") => void;
   showRightRail: boolean;
   onToggleRightRail: () => void;
@@ -71,6 +73,7 @@ export function Chat({
         busy={busy}
         connectionState={connectionState}
         onInterrupt={onInterrupt}
+        onOpenHistory={onOpenHistory}
         showRightRail={showRightRail}
         onToggleRightRail={onToggleRightRail}
       />

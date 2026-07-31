@@ -125,6 +125,62 @@ export type Plugin = {
   install_path: string | null;
 };
 
+/** One durable permission rule, from GET /v1/workspaces/policy. */
+export type PolicyRule = {
+  tool: string;
+  decision: string;
+  decided_at: number;
+};
+
+/** A file or folder inside the workspace, from GET /v1/workspace/tree. */
+export type TreeEntry = {
+  name: string;
+  path: string;
+  kind: "dir" | "file";
+  size: number;
+  modified: number;
+  children?: TreeEntry[];
+};
+
+export type WorkspaceTree = {
+  workspace: string;
+  path: string;
+  depth: number;
+  entries: TreeEntry[];
+};
+
+/**
+ * A file preview from GET /v1/workspace/file.
+ *
+ * `ok: false` with a `reason` means the server refused to read it — binary or
+ * over the size cap. Shape of the body varies by kind: text and pdf carry
+ * `content`, csv carries `headers` + `rows`, xlsx carries `sheets`.
+ */
+export type WorkspaceFile = {
+  path: string;
+  size?: number;
+  modified?: number;
+  ok?: boolean;
+  /** Why the server would not read it. Only present when `ok` is false. */
+  reason?: string;
+  /** Reader-level failure, e.g. a missing optional dependency. */
+  error?: string;
+  content?: string;
+  pages?: number;
+  headers?: string[];
+  rows?: Array<Record<string, string>>;
+  row_count?: number;
+  sheets?: Record<string, { headers: string[]; rows: string[][] }>;
+};
+
+/** One line of the activity log, from GET /v1/sessions/{id}/activity. */
+export type ActivityRecord = {
+  ts: number;
+  session_id: string;
+  type: string;
+  payload: Record<string, unknown>;
+};
+
 export type WireEvent = {
   type: string;
   session_id: string;
@@ -229,6 +285,57 @@ export async function resolveApproval(
     method: "POST",
     body: JSON.stringify({ outcome }),
   });
+}
+
+/** Permission rules in force. Omit `workspace` to use the active one. */
+export async function getWorkspacePolicy(
+  workspace?: string,
+): Promise<{ workspace: string; rules: PolicyRule[] }> {
+  const q = workspace ? `?workspace=${encodeURIComponent(workspace)}` : "";
+  const data = await req<{ workspace?: string; rules?: PolicyRule[] }>(
+    `/v1/workspaces/policy${q}`,
+  );
+  return { workspace: data?.workspace ?? "", rules: data?.rules ?? [] };
+}
+
+/** Drops a saved rule. Resolves `false` when there was nothing to drop. */
+export async function revokeWorkspacePolicy(
+  tool: string,
+  workspace?: string,
+): Promise<boolean> {
+  const q = workspace ? `?workspace=${encodeURIComponent(workspace)}` : "";
+  const data = await req<{ ok?: boolean }>(
+    `/v1/workspaces/policy/${encodeURIComponent(tool)}${q}`,
+    { method: "DELETE" },
+  );
+  return Boolean(data?.ok);
+}
+
+/** One level of the workspace tree. `depth` is capped at 5 by the server. */
+export async function getWorkspaceTree(
+  path = ".",
+  depth = 1,
+): Promise<WorkspaceTree> {
+  return req<WorkspaceTree>(
+    `/v1/workspace/tree?path=${encodeURIComponent(path)}&depth=${depth}`,
+  );
+}
+
+export async function getWorkspaceFile(path: string): Promise<WorkspaceFile> {
+  return req<WorkspaceFile>(`/v1/workspace/file?path=${encodeURIComponent(path)}`);
+}
+
+/** Activity newest-first. `before` is a `ts` cursor; records are strictly older. */
+export async function getSessionActivity(
+  sessionId: string,
+  opts?: { limit?: number; before?: number },
+): Promise<ActivityRecord[]> {
+  const params = new URLSearchParams({ limit: String(opts?.limit ?? 50) });
+  if (opts?.before !== undefined) params.set("before", String(opts.before));
+  const data = await req<{ records?: ActivityRecord[] }>(
+    `/v1/sessions/${encodeURIComponent(sessionId)}/activity?${params}`,
+  );
+  return data?.records ?? [];
 }
 
 /** Throws on a non-2xx reply so callers can render one failed section only. */

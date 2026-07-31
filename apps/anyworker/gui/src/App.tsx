@@ -6,6 +6,7 @@ import { useSession } from "./hooks/useSession";
 import { useSessionStream } from "./hooks/useSessionStream";
 import { useSettings } from "./hooks/useSettings";
 import { Chat } from "./views/Chat";
+import { History } from "./views/History";
 import { Plugins } from "./views/Plugins";
 import { SettingsRoute } from "./views/Settings/SettingsRoute";
 
@@ -48,6 +49,8 @@ export function App() {
           <SettingsRoute settings={settings} onDone={() => navigate("chat")} />
         ) : route === "plugins" ? (
           <Plugins />
+        ) : route === "history" ? (
+          <History sessionId={session.sessionId} title={session.chatTitle} />
         ) : (
           <Chat
             chatTitle={session.chatTitle}
@@ -62,6 +65,7 @@ export function App() {
             onHideTemplates={session.hideTemplates}
             onSend={stream.sendUserMessage}
             onInterrupt={stream.interrupt}
+            onOpenHistory={() => navigate("history")}
             onApprove={stream.approve}
             showRightRail={showRightRail}
             onToggleRightRail={() => setShowRightRail((v) => !v)}
@@ -74,6 +78,8 @@ export function App() {
           artifacts={stream.artifacts}
           provider={settings.provider}
           model={settings.model}
+          workspace={settings.workspace}
+          onOpenHistory={() => navigate("history")}
         />
       )}
     </div>
