@@ -3,24 +3,24 @@ import { Badge } from "@/components/ui/badge";
 import type { UseCaseTemplate } from "../types";
 import {
   FileSearch,
-  Search,
-  Landmark,
-  FlaskConical,
+  GitCompare,
+  Table,
+  PenLine,
   ArrowRight,
 } from "lucide-react";
 
 const ICONS: Record<string, React.ReactNode> = {
   FileSearch: <FileSearch className="size-5" />,
-  Search: <Search className="size-5" />,
-  Landmark: <Landmark className="size-5" />,
-  FlaskConical: <FlaskConical className="size-5" />,
+  GitCompare: <GitCompare className="size-5" />,
+  Table: <Table className="size-5" />,
+  PenLine: <PenLine className="size-5" />,
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
-  rag: "Local",
-  research: "Web",
-  banking: "Finance",
-  automation: "Dev",
+  summarize: "Summarize",
+  compare: "Compare",
+  spreadsheet: "Spreadsheet",
+  write: "Write",
 };
 
 export function UseCasePicker({

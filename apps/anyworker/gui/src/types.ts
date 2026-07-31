@@ -18,40 +18,40 @@ export type UseCaseTemplate = {
   description: string;
   icon: string;
   prompt: string;
-  category: "rag" | "research" | "banking" | "automation";
+  category: "summarize" | "compare" | "spreadsheet" | "write";
 };
 
 export const USE_CASE_TEMPLATES: UseCaseTemplate[] = [
   {
-    id: "local-rag",
-    title: "Local RAG",
-    description: "Index your local files (pdf, xlsx, csv, txt) and ask questions about them. No data leaves your machine.",
+    id: "summarize-folder",
+    title: "Summarize a folder",
+    description: "Read every document in a folder and write one summary that pulls out the key points.",
     icon: "FileSearch",
-    prompt: "Index my project files and help me understand the codebase. I need a RAG pipeline that can answer questions about my local documents.",
-    category: "rag",
+    prompt: "Read every document in this folder and write a summary that pulls out the key points from each one.",
+    category: "summarize",
   },
   {
-    id: "deep-research",
-    title: "Deep Research",
-    description: "Research any topic by searching the web, reading PDFs and synthesizing findings into a comprehensive report.",
-    icon: "Search",
-    prompt: "Research [topic] thoroughly. Search the web, read multiple sources, and synthesize a comprehensive report with key findings, data points, and citations.",
-    category: "research",
+    id: "compare-documents",
+    title: "Compare two documents",
+    description: "Read two files and list what changed, what matches, and what is missing between them.",
+    icon: "GitCompare",
+    prompt: "Read these two documents and list what changed, what matches, and what is missing between them.",
+    category: "compare",
   },
   {
-    id: "banking-analysis",
-    title: "Banking Analysis",
-    description: "Analyze financial statements, detect fraud patterns, and generate compliance reports from spreadsheets and PDFs.",
-    icon: "Landmark",
-    prompt: "Analyze these financial documents for fraud detection, risk assessment, and compliance. Extract key metrics, flag anomalies, and generate a summary report.",
-    category: "banking",
+    id: "spreadsheet-summary",
+    title: "Turn a spreadsheet into a summary",
+    description: "Read a spreadsheet and write a plain-English summary of the totals, trends, and outliers.",
+    icon: "Table",
+    prompt: "Read this spreadsheet and write a plain-English summary of the totals, trends, and outliers.",
+    category: "spreadsheet",
   },
   {
-    id: "automation-test",
-    title: "Test Prompts",
-    description: "Define test cases for your prompts, run batch evaluations, and track performance over time.",
-    icon: "FlaskConical",
-    prompt: "Run automated tests on my prompt sets. Define expected outputs, batch execute across models, and report pass/fail rates.",
-    category: "automation",
+    id: "draft-memo",
+    title: "Draft a memo from notes",
+    description: "Read your notes and draft a memo that lays out the decision, the reasons, and next steps.",
+    icon: "PenLine",
+    prompt: "Read the notes in this folder and draft a memo that lays out the decision, the reasons, and next steps.",
+    category: "write",
   },
 ];
