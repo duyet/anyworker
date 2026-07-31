@@ -1,4 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import {
+  installPlugin,
+  listPlugins,
+  uninstallPlugin,
+  type Plugin,
+} from "../../api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -6,45 +12,29 @@ import { Badge } from "@/components/ui/badge";
 import {
   Puzzle,
   GitBranch,
-  Plus,
   Trash2,
   ExternalLink,
-  Download,
   CheckCircle2,
   Loader2,
+  AlertTriangle,
 } from "lucide-react";
-
-type Plugin = {
-  name: string;
-  version: string;
-  description: string;
-  skills: string[];
-  repository: string;
-  install_path: string | null;
-};
-
-const INSTALL_URLS = [
-  { url: "https://github.com/anyworker/skills-marketing", label: "Marketing skills" },
-  { url: "https://github.com/anyworker/skills-finance", label: "Finance & banking" },
-  { url: "https://github.com/anyworker/skills-data", label: "Data analysis" },
-];
 
 export function Plugins() {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [installUrl, setInstallUrl] = useState("");
+  const [confirmUrl, setConfirmUrl] = useState<string | null>(null);
   const [installing, setInstalling] = useState(false);
   const [installError, setInstallError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
   const loadPlugins = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://127.0.0.1:8765/v1/plugins/");
-      const data = await res.json();
-      setPlugins(data.plugins ?? []);
+      setPlugins(await listPlugins());
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load plugins");
     } finally {
@@ -56,22 +46,13 @@ export function Plugins() {
     void loadPlugins();
   }, [loadPlugins]);
 
-  const install = async () => {
-    const url = installUrl.trim();
-    if (!url) return;
+  const install = async (url: string) => {
     setInstalling(true);
     setInstallError(null);
     try {
-      const res = await fetch("http://127.0.0.1:8765/v1/plugins/install", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || data.detail || "Install failed");
-      }
+      await installPlugin(url);
       setInstallUrl("");
+      setConfirmUrl(null);
       await loadPlugins();
     } catch (e) {
       setInstallError(e instanceof Error ? e.message : "Install failed");
@@ -80,14 +61,16 @@ export function Plugins() {
     }
   };
 
-  const uninstall = async (name: string) => {
+  const remove = async (name: string) => {
+    setRemoving(name);
+    setError(null);
     try {
-      await fetch(`http://127.0.0.1:8765/v1/plugins/${encodeURIComponent(name)}`, {
-        method: "DELETE",
-      });
+      await uninstallPlugin(name);
       await loadPlugins();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Uninstall failed");
+    } finally {
+      setRemoving(null);
     }
   };
 
@@ -107,75 +90,95 @@ export function Plugins() {
         <div>
           <h1 className="text-lg font-semibold flex items-center gap-2 mb-1">
             <Puzzle className="size-5" />
-            Skills & Plugins
+            Skills &amp; plugins
           </h1>
           <p className="text-sm text-muted-foreground">
-            Install skills from git repositories or browse curated sets.
+            A plugin is a git repository of skills. AnyWorker clones it onto this
+            computer and loads its skills into your sessions.
           </p>
         </div>
-
-        {/* Curated plugins */}
-        <section className="space-y-2">
-          <h2 className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
-            Curated
-          </h2>
-          <div className="grid grid-cols-1 gap-2">
-            {INSTALL_URLS.map((item) => (
-              <button
-                key={item.url}
-                type="button"
-                onClick={() => {
-                  setInstallUrl(item.url);
-                }}
-                className="flex items-center gap-3 rounded-lg border border-border/60 bg-surface p-3 text-left hover:border-brand/30 hover:bg-surface-muted/50 transition-all"
-              >
-                <div className="rounded-lg bg-brand/10 p-2">
-                  <Download className="size-4 text-brand" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium">{item.label}</div>
-                  <div className="text-xs text-muted-foreground truncate font-mono">
-                    {item.url}
-                  </div>
-                </div>
-                <Badge variant="outline" className="text-[10px] shrink-0">
-                  Install
-                </Badge>
-              </button>
-            ))}
-          </div>
-        </section>
 
         {/* Install from URL */}
         <section className="space-y-2">
           <h2 className="text-xs uppercase tracking-wide text-muted-foreground font-medium flex items-center gap-1.5">
             <GitBranch className="size-3" />
-            Install from git URL
+            Install from a git URL
           </h2>
+
+          <div className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2.5 text-xs space-y-1">
+            <div className="flex items-center gap-1.5 font-medium text-danger">
+              <AlertTriangle className="size-3.5" />
+              Installing runs code from that URL on this computer
+            </div>
+            <p className="text-muted-foreground">
+              AnyWorker runs <code className="font-mono">git clone</code> against any
+              URL you give it. There is no allowlist and nothing is reviewed. The
+              skills it installs can run commands with your account. Install only
+              repositories you trust.
+            </p>
+          </div>
+
           <div className="flex gap-2">
             <Input
               className="flex-1 h-9 text-xs font-mono"
               value={installUrl}
-              onChange={(e) => setInstallUrl(e.target.value)}
+              onChange={(e) => {
+                setInstallUrl(e.target.value);
+                setConfirmUrl(null);
+              }}
               placeholder="https://github.com/user/repo.git"
+              aria-label="Git URL to clone"
               onKeyDown={(e) => {
-                if (e.key === "Enter") install();
+                if (e.key === "Enter" && installUrl.trim())
+                  setConfirmUrl(installUrl.trim());
               }}
             />
             <Button
               size="sm"
+              variant="outline"
               className="h-9 shrink-0"
               disabled={!installUrl.trim() || installing}
-              onClick={install}
+              onClick={() => setConfirmUrl(installUrl.trim())}
             >
-              {installing ? (
-                <Loader2 className="size-3.5 animate-spin mr-1" />
-              ) : (
-                <Plus className="size-3.5 mr-1" />
-              )}
-              Install
+              Review install
             </Button>
           </div>
+
+          {confirmUrl ? (
+            <div className="rounded-md border border-border bg-surface px-3 py-2.5 text-xs space-y-2">
+              <p className="text-muted-foreground">This will run, as you:</p>
+              <pre className="overflow-x-auto rounded bg-surface-muted px-2 py-1.5 font-mono text-[11px]">
+                git clone --depth 1 {confirmUrl}
+              </pre>
+              <p className="text-muted-foreground">
+                Into <code className="font-mono">~/.anyworker/plugins</code>. Any
+                existing plugin folder with the same name is deleted first.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="h-8"
+                  disabled={installing}
+                  onClick={() => void install(confirmUrl)}
+                >
+                  {installing ? (
+                    <Loader2 className="size-3.5 animate-spin mr-1" />
+                  ) : null}
+                  {installing ? "Cloning…" : "Run it"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8"
+                  disabled={installing}
+                  onClick={() => setConfirmUrl(null)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
           {installError ? (
             <div className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-danger">
               {installError}
@@ -194,6 +197,7 @@ export function Plugins() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search plugins…"
+              aria-label="Search installed plugins"
             />
           </div>
 
@@ -211,7 +215,7 @@ export function Plugins() {
               <Puzzle className="size-8 text-muted-foreground/30 mx-auto mb-2" />
               <p className="text-xs text-muted-foreground">
                 {plugins.length === 0
-                  ? "No plugins installed yet."
+                  ? "No plugins installed. Paste a git URL above to add one."
                   : "No plugins match your search."}
               </p>
             </div>
@@ -247,7 +251,11 @@ export function Plugins() {
                             </Badge>
                           ))}
                         </div>
-                      ) : null}
+                      ) : (
+                        <p className="text-xs text-muted-foreground">
+                          No skills found in this plugin.
+                        </p>
+                      )}
                       {p.repository ? (
                         <a
                           href={p.repository}
@@ -264,10 +272,15 @@ export function Plugins() {
                       variant="ghost"
                       size="icon"
                       className="size-7 shrink-0 text-destructive hover:text-destructive"
-                      onClick={() => uninstall(p.name)}
+                      disabled={removing === p.name}
+                      onClick={() => void remove(p.name)}
                       aria-label={`Uninstall ${p.name}`}
                     >
-                      <Trash2 className="size-3.5" />
+                      {removing === p.name ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="size-3.5" />
+                      )}
                     </Button>
                   </div>
                 </Card>

@@ -1,15 +1,17 @@
 import { type SessionInfo } from "../api";
+import { useRoute } from "../hooks/useRoute";
+import { WorkspacePicker } from "./WorkspacePicker";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
   Sparkles,
   Plus,
-  FolderOpen,
   Settings2,
   History,
   Bot,
+  MessageSquare,
+  Puzzle,
 } from "lucide-react";
 
 export function Sidebar({
@@ -33,6 +35,8 @@ export function Sidebar({
   onCreateSession: () => void;
   onOpenSettings: () => void;
 }) {
+  const { route, navigate } = useRoute();
+
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-surface">
       {/* Header */}
@@ -44,28 +48,33 @@ export function Sidebar({
       </div>
 
       {/* Workspace */}
-      <div className="space-y-2 border-b border-border p-3">
-        <label className="block text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
-          Workspace
-        </label>
-        <div className="flex gap-1.5">
-          <Input
-            className="h-8 text-xs"
-            value={workspaceInput}
-            onChange={(e) => onWorkspaceInputChange(e.target.value)}
-            placeholder="/path/to/project"
-            onKeyDown={(e) => { if (e.key === "Enter") onWorkspaceSet(); }}
-          />
-          <Tooltip>
-            <TooltipTrigger>
-              <Button variant="ghost" size="icon" className="size-8 shrink-0" aria-label="Open folder">
-                <FolderOpen className="size-3.5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Open folder</TooltipContent>
-          </Tooltip>
-        </div>
-      </div>
+      <WorkspacePicker
+        value={workspaceInput}
+        onChange={onWorkspaceInputChange}
+        onCommit={onWorkspaceSet}
+      />
+
+      {/* Nav */}
+      <nav className="space-y-0.5 border-b border-border p-1.5">
+        {[
+          { key: "chat" as const, label: "Chat", Icon: MessageSquare },
+          { key: "plugins" as const, label: "Skills & plugins", Icon: Puzzle },
+        ].map(({ key, label, Icon }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => navigate(key)}
+            aria-current={route === key ? "page" : undefined}
+            className={cn(
+              "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-left hover:bg-surface-muted transition-colors",
+              route === key ? "bg-surface-muted font-medium" : "text-muted-foreground",
+            )}
+          >
+            <Icon className="size-3.5 shrink-0" />
+            {label}
+          </button>
+        ))}
+      </nav>
 
       {/* Sessions */}
       <div className="flex-1 overflow-y-auto">
@@ -76,7 +85,15 @@ export function Sidebar({
           </span>
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost" size="icon" className="size-6" onClick={onCreateSession}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-6"
+                onClick={() => {
+                  navigate("chat");
+                  onCreateSession();
+                }}
+              >
                 <Plus className="size-3.5" />
               </Button>
             </TooltipTrigger>
@@ -93,7 +110,10 @@ export function Sidebar({
               <button
                 key={s.id}
                 type="button"
-                onClick={() => onSelectSession(s.id)}
+                onClick={() => {
+                  navigate("chat");
+                  onSelectSession(s.id);
+                }}
                 className={cn(
                   "w-full rounded-md px-3 py-2.5 text-left hover:bg-surface-muted transition-colors",
                   sessionId === s.id ? "bg-surface-muted ring-1 ring-brand/30" : "",
