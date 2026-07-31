@@ -17,6 +17,7 @@ from anyworker.agent.compat_runner import (
     _safe_json_parse,
 )
 from anyworker.agent.events import EventType
+from anyworker.policy import PermissionPolicy
 from anyworker.server.manager import SessionManager
 
 
@@ -440,6 +441,84 @@ async def test_compat_requires_approval(tmp_path: Path) -> None:
     assert EventType.PERMISSION_REQUIRED in types
     assert len(approval_received) == 1
     assert approval_received[0]["tool_name"] == "WriteFile"
+
+
+@pytest.mark.asyncio
+async def test_compat_always_tool_survives_a_new_runner(tmp_path: Path) -> None:
+    """`always_tool` is durable: a fresh runner for the same workspace skips approval."""
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    policy = PermissionPolicy(tmp_path / "permissions.json")
+
+    call_count = [0]
+
+    def stateful_handler(request: httpx.Request) -> httpx.Response:
+        call_count[0] += 1
+        if call_count[0] % 2 == 1:
+            chunks = [
+                _sse_chunk({
+                    "choices": [{
+                        "delta": {
+                            "tool_calls": [{
+                                "index": 0,
+                                "id": "call_1",
+                                "function": {
+                                    "name": "WriteFile",
+                                    "arguments": json.dumps({"path": "out.txt", "content": "hello"}),
+                                },
+                            }]
+                        }
+                    }]
+                }),
+                _sse_chunk({"choices": [{"finish_reason": "tool_calls"}]}),
+                "data: [DONE]\n\n",
+            ]
+        else:
+            chunks = [
+                _sse_chunk({"choices": [{"delta": {"content": "Done!"}}]}),
+                _sse_chunk({"choices": [{"finish_reason": "stop"}]}),
+                "data: [DONE]\n\n",
+            ]
+        return httpx.Response(
+            status_code=200,
+            headers={"content-type": "text/event-stream"},
+            content="".join(chunks).encode("utf-8"),
+        )
+
+    mock_transport = httpx.MockTransport(stateful_handler)
+    approvals: list[dict[str, Any]] = []
+
+    async def approver(request: dict[str, Any]) -> str:
+        approvals.append(request)
+        return "always_tool"
+
+    async def run_once() -> list:
+        runner = CompatRunner(
+            session_id="s1",
+            workspace=str(workspace),
+            model="gpt-4",
+            api_key="sk-test",
+            base_url="https://api.openai.com/v1",
+            approver=approver,
+            policy=policy,
+        )
+        real_client = httpx.AsyncClient(transport=mock_transport)
+        events = []
+        with patch("httpx.AsyncClient", return_value=real_client):
+            async for event in runner.run_turn("write a file"):
+                events.append(event)
+        await real_client.aclose()
+        return events
+
+    first = await run_once()
+    assert EventType.PERMISSION_REQUIRED in [e.type for e in first]
+    assert len(approvals) == 1
+
+    # A new runner — exactly what `run_user_turn` builds on the next turn.
+    second = await run_once()
+    assert EventType.PERMISSION_REQUIRED not in [e.type for e in second]
+    assert len(approvals) == 1
+    assert EventType.TOOL_END in [e.type for e in second]
 
 
 @pytest.mark.asyncio

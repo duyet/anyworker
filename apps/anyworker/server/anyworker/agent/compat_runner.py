@@ -23,6 +23,7 @@ from typing import Any, Optional
 
 import httpx
 
+from anyworker.policy import PermissionPolicy
 from anyworker.tools.readers import (
     read_csv,
     read_pdf,
@@ -362,6 +363,7 @@ class CompatRunner:
         api_key: str = "",
         base_url: str = "",
         approver: Optional[Approver] = None,
+        policy: Optional[PermissionPolicy] = None,
     ) -> None:
         self.session_id = session_id
         self.workspace = workspace
@@ -369,9 +371,22 @@ class CompatRunner:
         self.api_key = api_key
         self.base_url = base_url.rstrip("/") if base_url else ""
         self.approver = approver
+        self.policy = policy
         self._client: Optional[httpx.AsyncClient] = None
         self._session_allow_tools: set[str] = set()
         self._interrupted = False
+
+    def _already_allowed(self, tool_name: str) -> bool:
+        if tool_name in self._session_allow_tools:
+            return True
+        return self.policy is not None and self.policy.is_allowed(
+            self.workspace, tool_name
+        )
+
+    def _record_always(self, tool_name: str) -> None:
+        self._session_allow_tools.add(tool_name)
+        if self.policy is not None:
+            self.policy.record_outcome(self.workspace, tool_name, "always_tool")
 
     async def aclose(self) -> None:
         if self._client is not None:
@@ -575,7 +590,7 @@ class CompatRunner:
                         # Check if the tool requires approval
                         needs_approval = (
                             name in _REQUIRES_APPROVAL
-                            and name not in self._session_allow_tools
+                            and not self._already_allowed(name)
                         )
 
                         if needs_approval:
@@ -615,7 +630,7 @@ class CompatRunner:
                             }
                             outcome = await self.approver(request)
                             if outcome == "always_tool":
-                                self._session_allow_tools.add(name)
+                                self._record_always(name)
                             if outcome == "deny":
                                 yield Event(
                                     type=EventType.ERROR,

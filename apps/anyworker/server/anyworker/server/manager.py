@@ -11,10 +11,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Awaitable, Optional
 
+from anyworker.activity import ActivityLog
 from anyworker.agent.cas_runner import CasRunner
 from anyworker.agent.compat_runner import CompatRunner
 from anyworker.agent.events import Event, EventType
 from anyworker.config import state_dir
+from anyworker.policy import PermissionPolicy
 from anyworker.providers.registry import get_provider
 from anyworker.providers.secrets import SecretStore
 
@@ -39,6 +41,8 @@ class Session:
 class SessionManager:
     def __init__(self) -> None:
         self.secrets = SecretStore()
+        self.policy = PermissionPolicy()
+        self.activity = ActivityLog()
         self.sessions: dict[str, Session] = {}
         self._load_index()
 
@@ -166,6 +170,9 @@ class SessionManager:
 
     async def _broadcast(self, session: Session, event: Event) -> None:
         data = event.model_dump()
+        if event.type is not EventType.TEXT_DELTA:
+            # Deltas are noise — the assembled TEXT event carries the same words.
+            self.activity.append(session.id, event.type, event.payload)
         for q in list(session.subscribers):
             await q.put(data)
 
@@ -198,11 +205,20 @@ class SessionManager:
                 ),
             )
             try:
-                return await asyncio.wait_for(fut, timeout=600)
+                outcome = await asyncio.wait_for(fut, timeout=600)
             except asyncio.TimeoutError:
-                return "deny"
-            finally:
-                session.pending_approvals.pop(approval_id, None)
+                outcome = "deny"
+            self.activity.append(
+                session.id,
+                EventType.PERMISSION_REQUIRED,
+                {
+                    "id": approval_id,
+                    "tool_name": request.get("tool_name"),
+                    "outcome": outcome,
+                },
+            )
+            session.pending_approvals.pop(approval_id, None)
+            return outcome
 
         return approver
 
@@ -225,6 +241,7 @@ class SessionManager:
                 model=session.model or None,
                 env=env,
                 approver=approver,
+                policy=self.policy,
             )
         else:
             # Path B — thin OpenAI-compatible tool loop.
@@ -245,6 +262,7 @@ class SessionManager:
                 api_key=api_key,
                 base_url=base_url,
                 approver=approver,
+                policy=self.policy,
             )
         session.runner = runner
 

@@ -7,6 +7,8 @@ import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
 from typing import Any, Optional
 
+from anyworker.policy import PermissionPolicy
+
 from .events import Event, EventType
 from .prompt import ANYWORKER_COWORK_PROMPT
 
@@ -37,12 +39,14 @@ class CasRunner:
         model: Optional[str] = None,
         env: Optional[dict[str, str]] = None,
         approver: Optional[Approver] = None,
+        policy: Optional[PermissionPolicy] = None,
     ) -> None:
         self.session_id = session_id
         self.workspace = workspace
         self.model = model
         self.env = dict(env or {})
         self.approver = approver
+        self.policy = policy
         self._client: Any = None
         self._session_allow_tools: set[str] = set()
 
@@ -67,7 +71,7 @@ class CasRunner:
         async def can_use_tool(
             tool_name: str, input_data: dict, context: Any
         ) -> PermissionResultAllow | PermissionResultDeny:
-            if tool_name in self._session_allow_tools:
+            if self._already_allowed(tool_name):
                 return PermissionResultAllow(updated_input=input_data)
 
             # Auto-allow read-only tools so the loop stays snappy.
@@ -89,10 +93,22 @@ class CasRunner:
             if outcome == "deny":
                 return PermissionResultDeny(message="User denied", interrupt=False)
             if outcome == "always_tool":
-                self._session_allow_tools.add(tool_name)
+                self._record_always(tool_name)
             return PermissionResultAllow(updated_input=input_data)
 
         return can_use_tool
+
+    def _already_allowed(self, tool_name: str) -> bool:
+        if tool_name in self._session_allow_tools:
+            return True
+        return self.policy is not None and self.policy.is_allowed(
+            self.workspace, tool_name
+        )
+
+    def _record_always(self, tool_name: str) -> None:
+        self._session_allow_tools.add(tool_name)
+        if self.policy is not None:
+            self.policy.record_outcome(self.workspace, tool_name, "always_tool")
 
     async def run_turn(self, prompt: str) -> AsyncIterator[Event]:
         if not _cas_available():

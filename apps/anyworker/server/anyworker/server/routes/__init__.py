@@ -5,6 +5,7 @@ from .byok import build_router as build_byok_router
 from .catalog import build_router as build_catalog_router
 from .github import build_router as build_github_router
 from .testing import build_router as build_testing_router
+from .workspace import build_router as build_workspace_router
 from anyworker.plugins.routes import build_router as build_plugin_router
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "build_github_router",
     "build_testing_router",
     "build_plugin_router",
+    "build_workspace_router",
 ]

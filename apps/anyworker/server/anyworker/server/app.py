@@ -21,6 +21,7 @@ from anyworker.server.routes import (
     build_github_router,
     build_plugin_router,
     build_testing_router,
+    build_workspace_router,
 )
 
 log = logging.getLogger(__name__)
@@ -87,6 +88,7 @@ def create_app(manager: SessionManager) -> FastAPI:
     app.include_router(build_github_router(manager))
     app.include_router(build_byok_router(manager))
     app.include_router(build_testing_router(manager))
+    app.include_router(build_workspace_router(manager))
 
     @app.get("/v1/health")
     async def health() -> dict[str, Any]:
@@ -159,6 +161,18 @@ def create_app(manager: SessionManager) -> FastAPI:
         )
         return {"ok": True, "path": str(path.resolve())}
 
+    @app.get("/v1/workspaces/policy")
+    async def get_policy(workspace: Optional[str] = None) -> dict[str, Any]:
+        target = workspace or manager.secrets.get_active().get("workspace") or ""
+        return {"workspace": target, "rules": manager.policy.list_rules(target)}
+
+    @app.delete("/v1/workspaces/policy/{tool}")
+    async def revoke_policy(
+        tool: str, workspace: Optional[str] = None
+    ) -> dict[str, Any]:
+        target = workspace or manager.secrets.get_active().get("workspace") or ""
+        return {"ok": manager.policy.revoke(target, tool)}
+
     @app.get("/v1/sessions")
     async def sessions(workspace: Optional[str] = None) -> dict[str, Any]:
         return {"sessions": manager.list_sessions(workspace)}
@@ -186,6 +200,16 @@ def create_app(manager: SessionManager) -> FastAPI:
         if not session:
             return {"messages": [], "error": "not found"}
         return {"messages": session.messages}
+
+    @app.get("/v1/sessions/{session_id}/activity")
+    async def activity(
+        session_id: str, limit: int = 100, before: Optional[float] = None
+    ) -> dict[str, Any]:
+        return {
+            "records": manager.activity.read(
+                session_id, limit=min(max(limit, 1), 1000), before=before
+            )
+        }
 
     @app.patch("/v1/sessions/{session_id}")
     async def patch_session(session_id: str, body: PatchSessionBody) -> dict[str, Any]:
