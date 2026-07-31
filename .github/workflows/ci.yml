@@ -31,7 +31,7 @@ jobs:
       - run: pnpm --filter @anyworker/web build
 
   gui:
-    name: gui (typecheck · build)
+    name: gui (typecheck · test · build)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -43,6 +43,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @anyworker/gui typecheck
+      - run: pnpm --filter @anyworker/gui test
       - run: pnpm --filter @anyworker/gui build
 
   server:
