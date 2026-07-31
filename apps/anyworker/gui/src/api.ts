@@ -109,6 +109,22 @@ export type ByokTestResult = {
   latency_ms?: number | null;
 };
 
+/** A workspace the user has opened before, from GET /v1/workspaces/recent. */
+export type RecentWorkspace = {
+  path: string;
+  name: string;
+  exists: boolean;
+};
+
+export type Plugin = {
+  name: string;
+  version: string;
+  description: string;
+  skills: string[];
+  repository: string;
+  install_path: string | null;
+};
+
 export type WireEvent = {
   type: string;
   session_id: string;
@@ -131,32 +147,27 @@ export function getHttpBase() {
 }
 
 export async function getHealth(): Promise<Health> {
-  const res = await fetch(`${httpBase()}/v1/health`);
-  if (!res.ok) throw new Error(`health ${res.status}`);
-  return res.json();
+  return req<Health>("/v1/health");
 }
 
 export async function getProviders(): Promise<Provider[]> {
-  const res = await fetch(`${httpBase()}/v1/providers`);
-  const data = await res.json();
-  return data.providers ?? [];
+  const data = await req<{ providers?: Provider[] }>("/v1/providers");
+  return data?.providers ?? [];
 }
 
 export async function getSettings(): Promise<{
   active: Record<string, string>;
   configured: Record<string, { has_key: boolean; base_url: string }>;
 }> {
-  const res = await fetch(`${httpBase()}/v1/settings`);
-  return res.json();
+  return req("/v1/settings");
 }
 
 export async function setProviderProfile(
   name: string,
   profile: Record<string, string>,
 ): Promise<void> {
-  await fetch(`${httpBase()}/v1/providers/${encodeURIComponent(name)}`, {
+  await req(`/v1/providers/${encodeURIComponent(name)}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ profile }),
   });
 }
@@ -166,27 +177,25 @@ export async function setActive(body: {
   model: string;
   workspace?: string;
 }): Promise<void> {
-  await fetch(`${httpBase()}/v1/settings/active`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  await req("/v1/settings/active", { method: "POST", body: JSON.stringify(body) });
 }
 
-export async function openWorkspace(path: string): Promise<{ ok: boolean; path?: string; error?: string }> {
-  const res = await fetch(`${httpBase()}/v1/workspaces/open`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ path }),
-  });
-  return res.json();
+/** Resolves with `ok: false` for a bad path; throws only when the request fails. */
+export async function openWorkspace(
+  path: string,
+): Promise<{ ok: boolean; path?: string; error?: string }> {
+  return req("/v1/workspaces/open", { method: "POST", body: JSON.stringify({ path }) });
+}
+
+export async function getRecentWorkspaces(): Promise<RecentWorkspace[]> {
+  const data = await req<{ workspaces?: RecentWorkspace[] }>("/v1/workspaces/recent");
+  return data?.workspaces ?? [];
 }
 
 export async function getSessions(workspace?: string): Promise<SessionInfo[]> {
   const q = workspace ? `?workspace=${encodeURIComponent(workspace)}` : "";
-  const res = await fetch(`${httpBase()}/v1/sessions${q}`);
-  const data = await res.json();
-  return data.sessions ?? [];
+  const data = await req<{ sessions?: SessionInfo[] }>(`/v1/sessions${q}`);
+  return data?.sessions ?? [];
 }
 
 export async function createSession(body: {
@@ -195,24 +204,20 @@ export async function createSession(body: {
   provider?: string;
   model?: string;
 }): Promise<SessionInfo> {
-  const res = await fetch(`${httpBase()}/v1/sessions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  return res.json();
+  return req<SessionInfo>("/v1/sessions", { method: "POST", body: JSON.stringify(body) });
 }
 
 export async function getMessages(
   sessionId: string,
 ): Promise<Array<{ role: string; content?: string }>> {
-  const res = await fetch(`${httpBase()}/v1/sessions/${sessionId}/messages`);
-  const data = await res.json();
-  return data.messages ?? [];
+  const data = await req<{ messages?: Array<{ role: string; content?: string }> }>(
+    `/v1/sessions/${encodeURIComponent(sessionId)}/messages`,
+  );
+  return data?.messages ?? [];
 }
 
 export async function deleteSession(sessionId: string): Promise<void> {
-  await fetch(`${httpBase()}/v1/sessions/${sessionId}`, { method: "DELETE" });
+  await req(`/v1/sessions/${encodeURIComponent(sessionId)}`, { method: "DELETE" });
 }
 
 export async function resolveApproval(
@@ -425,6 +430,33 @@ export async function updateByokKey(
 
 export async function deleteByokKey(id: string): Promise<void> {
   await req(`/v1/byok/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+export async function listPlugins(): Promise<Plugin[]> {
+  const data = await req<{ plugins?: Plugin[] }>("/v1/plugins/");
+  return data?.plugins ?? [];
+}
+
+/** Runs `git clone` on the user's machine against `url`. There is no allowlist. */
+export async function installPlugin(url: string, name?: string): Promise<Plugin> {
+  return req<Plugin>("/v1/plugins/install", {
+    method: "POST",
+    body: JSON.stringify(name ? { url, name } : { url }),
+  });
+}
+
+export async function uninstallPlugin(name: string): Promise<boolean> {
+  const data = await req<{ ok?: boolean }>(`/v1/plugins/${encodeURIComponent(name)}`, {
+    method: "DELETE",
+  });
+  return Boolean(data?.ok);
+}
+
+export async function getPluginSkills(name: string): Promise<string[]> {
+  const data = await req<{ skills?: string[] }>(
+    `/v1/plugins/${encodeURIComponent(name)}/skills`,
+  );
+  return data?.skills ?? [];
 }
 
 export function connectSessionWs(
