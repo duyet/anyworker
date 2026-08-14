@@ -1,6 +1,6 @@
 import { ArrowRight, Check } from "lucide-react"
 
-import { FeatureRelay } from "@/components/landing/feature-relay"
+import { UseCaseDemo } from "@/components/landing/skills"
 import { Container, Headline, Lede } from "@/components/landing/primitives"
 import { Button } from "@/components/ui/button"
 import { hero } from "@/content/site"
@@ -54,9 +54,22 @@ export function Hero() {
         </ul>
       </Container>
 
-      {/* Full-bleed painted stage + floating product windows */}
-      <div className="mt-8 w-full px-3 pb-10 sm:mt-10 sm:px-6 sm:pb-14 lg:px-10">
-        <FeatureRelay />
+      {/* Merged skills: use-case tabs + live app demo replaying running results */}
+      <div className="relative mt-8 w-full px-3 pb-10 sm:mt-10 sm:px-6 sm:pb-14 lg:px-10">
+        {/* Background image behind the demo app */}
+        <div
+          className="absolute inset-0 -z-10 overflow-hidden rounded-[0.875rem]"
+          aria-hidden="true"
+        >
+          <img
+            src="/brand/stage/peaks.webp"
+            alt=""
+            className="absolute inset-0 size-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/40 to-background/90" />
+        </div>
+
+        <UseCaseDemo />
       </div>
     </section>
   )

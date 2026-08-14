@@ -18,8 +18,9 @@ import { AnyWorkerMark } from "@/components/landing/wordmark"
 import { Container, Eyebrow, Headline } from "@/components/landing/primitives"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { skills, USE_CASES   } from "@/content/site"
-import type {UseCaseDef, UseCaseId} from "@/content/site";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { skills, USE_CASES } from "@/content/site"
+import type { UseCaseDef, UseCaseId } from "@/content/site"
 import { cn } from "@/lib/utils"
 
 const USE_CASE_ICONS: Record<string, React.ReactNode> = {
@@ -29,6 +30,68 @@ const USE_CASE_ICONS: Record<string, React.ReactNode> = {
   FlaskConical: <FlaskConical className="size-4" />,
 }
 
+/**
+ * Use-case tab picker + live app demo.
+ *
+ * Merged into the hero: the hero shows the headline and CTAs, then this
+ * component renders the use-case tabs with the running app shell replaying
+ * the selected workflow's steps, artifacts, and results.
+ */
+export function UseCaseDemo() {
+  const [activeId, setActiveId] = useState<UseCaseId>("rag")
+  const u = USE_CASES.find((c) => c.id === activeId) ?? USE_CASES[0]
+  const [phase, setPhase] = useState<"waiting" | "approved">("waiting")
+
+  const switchTo = useCallback((id: UseCaseId) => {
+    setActiveId(id)
+    setPhase("waiting")
+  }, [])
+
+  return (
+    <div className="w-full">
+      {/* Tab-based use-case picker */}
+      <Tabs
+        value={activeId}
+        onValueChange={(v) => switchTo(v as UseCaseId)}
+        className="w-full"
+      >
+        <TabsList
+          variant="line"
+          className="mx-auto mb-6 flex-wrap justify-center gap-2"
+        >
+          {USE_CASES.map((uc) => (
+            <TabsTrigger key={uc.id} value={uc.id} className="flex items-center gap-1.5">
+              <span
+                className={cn(
+                  "flex size-6 items-center justify-center rounded-lg",
+                  activeId === uc.id
+                    ? "bg-brand text-brand-foreground"
+                    : "bg-brand/10 text-brand",
+                )}
+              >
+                {USE_CASE_ICONS[uc.icon]}
+              </span>
+              {uc.title}
+              <Badge variant="outline" className="text-[10px] px-1.5">
+                {uc.badge}
+              </Badge>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      {/* Live app demo replaying running results */}
+      <div className="mx-auto max-w-5xl overflow-hidden rounded-[0.875rem] border">
+        <AppDemo useCase={u} phase={phase} onApprove={() => setPhase("approved")} />
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Standalone Skills section — kept below the hero for the full-page
+ * use-case gallery. Renders the same demo but with section chrome.
+ */
 export function Skills() {
   const [activeId, setActiveId] = useState<UseCaseId>("rag")
   const u = USE_CASES.find((c) => c.id === activeId) ?? USE_CASES[0]
@@ -49,10 +112,8 @@ export function Skills() {
             {skills.body}
           </p>
         </div>
-      </Container>
 
-      {/* Two-panel interactive demo */}
-      <Container>
+        {/* Two-panel interactive demo */}
         <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
           {/* Left: App window */}
           <div className="overflow-hidden rounded-[0.875rem] border text-left">
@@ -200,7 +261,7 @@ function AppDemo({
               </div>
             </div>
 
-            {/* Steps */}
+            {/* Tool steps as progress narrative with tool rendering */}
             <ol className="mx-auto flex w-full max-w-md flex-col gap-2">
               {useCase.steps.map((step, i) => {
                 const done = stepDone(i)
@@ -229,6 +290,16 @@ function AppDemo({
                 )
               })}
             </ol>
+
+            {/* Reasoning block (shows when approved) */}
+            {phase === "approved" ? (
+              <div className="mx-auto mt-5 w-full max-w-md rounded-xl border border-border bg-white p-4 shadow-sm dark:bg-surface">
+                <p className="text-sm font-semibold text-foreground">Reasoning</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  Analyzing the indexed files for patterns. Found 47 source files, extracted PDF/xlsx/csv content, built a local vector index, and identified key WebSocket and session management patterns.
+                </p>
+              </div>
+            ) : null}
 
             {/* Approval card */}
             {phase === "waiting" ? (

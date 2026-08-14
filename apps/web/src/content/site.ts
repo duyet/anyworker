@@ -22,12 +22,11 @@ export const site = {
   domain: "anyworker.dev",
   tagline: "AI that gets your everyday work done.",
   description:
-    "AnyWorker is an open AI coworker for people who don't code. It works in your files, inbox and chat, and finishes the task instead of describing it. Free models included.",
+    "AnyWorker is an open AI coworker built on the Claude Agent SDK with any-model compatibility. It works in your files, inbox and chat, and finishes the task instead of describing it. Free models included.",
 } as const
 
 export const nav = {
   links: [
-    { label: "How it works", href: "#how-it-works" },
     { label: "Skills", href: "#skills" },
     { label: "Connections", href: "#connections" },
     { label: "Plugins", href: "#plugins" },
@@ -43,12 +42,12 @@ export const hero = {
     { text: "Ask for the outcome.", accent: false },
     { text: "It handles the steps.", accent: true },
   ],
-  body: "AnyWorker opens your files, drafts the document, and sends the message. You review finished work. It checks in before anything that matters.",
+  body: "AnyWorker runs on the Claude Agent SDK with any model. It opens your files, drafts the document, and sends the message. You review finished work.",
   primaryCta: { label: "Start free", href: "#get-started" },
   secondaryCta: { label: "See it work", href: "#product-demo" },
   proofPoints: [
+    "Claude Agent SDK · any model",
     "Free models built in",
-    "No API key to set up",
     "Runs your Claude plugins",
   ],
 } as const
@@ -258,43 +257,6 @@ export const capabilities = {
   ],
 } as const
 
-export const howItWorks = {
-  eyebrow: "How it works",
-  headline: [
-    { text: "Three choices,", accent: false },
-    { text: "then hand it over.", accent: true },
-  ],
-  body: "AnyWorker brings the model you pick to the tools your work already lives in, carries the task through, and returns the result in chat, in Slack, or as a finished file.",
-  flow: {
-    youAsk: "You ask",
-    prompt: "What's the progress on Monday's launch?",
-    workerName: "AnyWorker",
-    workerSub: "runs on your machine or ours",
-    modelBadge: "Any model",
-    modelSub: "free · cloud · fully local",
-    toolsLabel: "Your tools",
-    outcomeLabel: "Finished outcome",
-    outcomeSub: "Reply in chat or Slack",
-    formats: "Docs · Sheets · Slides · PDF",
-    backLabel: "Back to you",
-    backSub: "in the form you need",
-  },
-  steps: [
-    {
-      title: "Choose a model",
-      body: "Start on the free models included with AnyRouter. Switch to a cloud model or one running fully local on your own machine whenever you want. Nothing else changes.",
-    },
-    {
-      title: "Connect your tools",
-      body: "Pick the tools AnyWorker can reach — files, email, calendar, Slack, your CRM. One click for the common ones, manual setup for anything else.",
-    },
-    {
-      title: "Delegate the outcome",
-      body: "Ask for the brief, the report, the update or the action. AnyWorker does the work and checks in with you before anything is sent, shared or deleted.",
-    },
-  ],
-} as const
-
 export type UseCaseId = "rag" | "banking" | "research" | "testing"
 
 export interface UseCaseStep {
@@ -453,7 +415,26 @@ export const connections = {
     { text: "Your models.", accent: false },
     { text: "Your tools.", accent: true },
   ],
-  body: "Run on the free models included, bring your own cloud provider, or keep everything on your machine. Then connect the everyday tools where your work already happens.",
+  body: "Built on the Claude Agent SDK with any-model compatibility. Run on the free models included, bring your own cloud provider, or keep everything on your machine. Then connect the everyday tools where your work already happens.",
+  marquee: {
+    speed: 20,
+    items: [
+      "Anthropic Claude",
+      "OpenAI GPT",
+      "Gemini",
+      "DeepSeek",
+      "Qwen",
+      "Ollama",
+      "Mistral",
+      "xAI",
+      "Gmail",
+      "Slack",
+      "GitHub",
+      "Notion",
+      "Google Drive",
+      "Google Calendar",
+    ],
+  },
   models: {
     label: "Model providers",
     sub: "Free, cloud, or fully local",
@@ -494,40 +475,13 @@ export const connections = {
     "Anything with an MCP server connects too. Marked soon means it is on the roadmap, not shipped.",
 } as const
 
-export const anyrouter = {
-  eyebrow: "The part nobody else gives you",
-  headline: [
-    { text: "Free models,", accent: false },
-    { text: "built in.", accent: true },
-  ],
-  body: "Most AI workers ask for a credit card before they do anything. AnyWorker ships wired to AnyRouter's free tier, so the zero-cost path is the default path — not a crippled trial.",
-  points: [
-    {
-      icon: "CreditCard",
-      title: "No API key, no card",
-      body: "Install it and delegate your first task. There is no key to create, no billing account to connect, no quota to request.",
-    },
-    {
-      icon: "Repeat",
-      title: "Switch models, keep everything",
-      body: "Move from a free model to Claude, GPT or a local Ollama build with one setting. Your skills, connections and history come with you.",
-    },
-    {
-      icon: "HardDrive",
-      title: "Or run it entirely local",
-      body: "Point AnyWorker at Ollama and nothing leaves your machine. Same skills, same connections, same worker.",
-    },
-  ],
-  cta: { label: "See free models", href: "https://anyrouter.dev" },
-} as const
-
 export const plugins = {
-  eyebrow: "Bring what you already built",
+  eyebrow: "Built on Claude Agent SDK",
   headline: [
     { text: "Your Claude plugins", accent: false },
     { text: "just work.", accent: true },
   ],
-  body: "AnyWorker reads the same plugin and skill format as Claude. Drop an existing plugin folder in and it loads — commands, skills, MCP servers and all. Nothing to port, nothing to rewrite.",
+  body: "AnyWorker is built on the Claude Agent SDK with any-model compatibility. It reads the same plugin and skill format as Claude. Drop an existing plugin folder in and it loads — commands, skills, MCP servers and all. Nothing to port, nothing to rewrite.",
   items: [
     {
       icon: "Puzzle",
@@ -631,17 +585,15 @@ export const footer = {
     {
       title: "Product",
       links: [
-        { label: "How it works", href: "#how-it-works" },
         { label: "Skills", href: "#skills" },
         { label: "Connections", href: "#connections" },
-        { label: "Free models", href: "#free-models" },
+        { label: "Plugins", href: "#plugins" },
       ],
     },
     {
       title: "Build",
       links: [
         { label: "Docs", href: "https://anyrouter.dev" },
-        { label: "Free models", href: "https://anyrouter.dev" },
         { label: "Plugins", href: "#plugins" },
         { label: "MCP servers", href: "#plugins" },
       ],
@@ -656,6 +608,9 @@ export const footer = {
       ],
     },
   ],
+  darkmode: {
+    label: "Dark mode",
+  },
   legal: "Early access. Feature availability changes week to week.",
 } as const
 
