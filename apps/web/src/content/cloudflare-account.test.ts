@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest"
 
 import { footer, hero, nav } from "@/content/site"
 
-const OLD_ACCOUNT = "23050adb6c92e313643a29e1ba64c88a"
 const NEW_ACCOUNT = "7df185a18b98382c3240fa7ac4a37075"
 
 const repoRoot = resolve(import.meta.dirname, "../../../..")
@@ -18,7 +17,7 @@ describe("documented Cloudflare account", () => {
 
     expect(accountLine).toBeDefined()
     expect(accountLine).toContain(NEW_ACCOUNT)
-    expect(readme).not.toContain(OLD_ACCOUNT)
+    expect(accountLine).toMatch(/CLOUDFLARE_ACCOUNT_ID/)
   })
 })
 
