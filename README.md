@@ -46,7 +46,7 @@ uv run anyworker-server
 **Secrets (repo Settings → Secrets):**
 
 - `CLOUDFLARE_API_TOKEN` — Workers deploy
-- `CLOUDFLARE_ACCOUNT_ID` — `23050adb6c92e313643a29e1ba64c88a`
+- `CLOUDFLARE_ACCOUNT_ID` — `7df185a18b98382c3240fa7ac4a37075`
 
 **release-please:** also enable *Allow GitHub Actions to create and approve pull requests*.
 
